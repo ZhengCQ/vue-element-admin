@@ -7,10 +7,10 @@ Vue.use(Router)
 import Layout from '@/views/layout/Layout'
 
 /* Router Modules */
-import componentsRouter from './modules/components'
-import chartsRouter from './modules/charts'
-import tableRouter from './modules/table'
-import nestedRouter from './modules/nested'
+// import componentsRouter from './modules/components'
+// import chartsRouter from './modules/charts'
+// import tableRouter from './modules/table'
+// import nestedRouter from './modules/nested'
 
 /** note: Submenu only appear when children.length>=1
  *  detail see  https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -88,19 +88,6 @@ export const constantRouterMap = [
         meta: { title: 'documentation', icon: 'documentation', noCache: true }
       }
     ]
-  },
-  {
-    path: '/guide',
-    component: Layout,
-    redirect: '/guide/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/guide/index'),
-        name: 'Guide',
-        meta: { title: 'guide', icon: 'guide', noCache: true }
-      }
-    ]
   }
 ]
 
@@ -142,26 +129,61 @@ export const asyncRouterMap = [
       }
     ]
   },
-
   {
-    path: '/icon',
+    path: '/user',
     component: Layout,
     children: [
       {
         path: 'index',
         component: () => import('@/views/svg-icons/index'),
-        name: 'Icons',
-        meta: { title: 'icons', icon: 'icon', noCache: true }
+        name: 'User',
+        meta: { title: 'user', icon: 'yonghu', noCache: true }
       }
     ]
   },
+  {
+    path: '/products',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/svg-icons/index'),
+        name: 'Products',
+        meta: { title: 'products', icon: 'products', noCache: false }
+      }
+    ]
+  },
+  {
+    path: '/interpretation',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/svg-icons/index'),
+        name: 'Interpretation',
+        meta: { title: 'interpretation', icon: 'interpretation', noCache: false }
+      }
+    ]
+  },
+  {
+    path: '/knowledges',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/svg-icons/index'),
+        name: 'Knowledges',
+        meta: { title: 'knowledges', icon: 'knowledges', noCache: false }
+      }
+    ]
+  }
 
   /** When your routing table is too long, you can split it into small modules**/
-  componentsRouter,
-  chartsRouter,
-  nestedRouter,
-  tableRouter,
-
+  // componentsRouter,
+  // chartsRouter,
+  // nestedRouter,
+  // tableRouter,
+/*
   {
     path: '/example',
     component: Layout,
@@ -365,5 +387,5 @@ export const asyncRouterMap = [
     ]
   },
 
-  { path: '*', redirect: '/404', hidden: true }
+  { path: '*', redirect: '/404', hidden: true }*/
 ]
