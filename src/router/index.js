@@ -11,6 +11,7 @@ import Layout from '@/views/layout/Layout'
 // import chartsRouter from './modules/charts'
 // import tableRouter from './modules/table'
 // import nestedRouter from './modules/nested'
+import knowledgesRouter from './modules/knowledges'
 
 /** note: Submenu only appear when children.length>=1
  *  detail see  https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -147,7 +148,7 @@ export const asyncRouterMap = [
     children: [
       {
         path: 'index',
-        component: () => import('@/views/svg-icons/index'),
+        component: () => import('@/views/products/Index'),
         name: 'Products',
         meta: { title: 'products', icon: 'products', noCache: false }
       }
@@ -165,19 +166,7 @@ export const asyncRouterMap = [
       }
     ]
   },
-  {
-    path: '/knowledges',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/svg-icons/index'),
-        name: 'Knowledges',
-        meta: { title: 'knowledges', icon: 'knowledges', noCache: false }
-      }
-    ]
-  }
-
+  knowledgesRouter
   /** When your routing table is too long, you can split it into small modules**/
   // componentsRouter,
   // chartsRouter,
