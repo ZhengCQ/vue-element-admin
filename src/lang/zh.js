@@ -125,6 +125,11 @@ export default {
     export: '导出',
     reviewer: '审核人',
     id: '序号',
+    product_id: '产品序号',
+    product_manager: '产品经理',
+    product_name: '产品名称',
+    state: '产品状态',
+    product_class: '产品类型',
     date: '时间',
     author: '作者',
     readings: '阅读数',
@@ -136,6 +141,7 @@ export default {
     delete: '删除',
     cancel: '取 消',
     confirm: '确 定'
+
   },
   errorLog: {
     tips: '请点击右上角bug小图标',
