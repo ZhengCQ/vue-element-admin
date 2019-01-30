@@ -160,7 +160,7 @@ export const asyncRouterMap = [
     children: [
       {
         path: 'index',
-        component: () => import('@/views/svg-icons/index'),
+        component: () => import('@/views/interpretation/Index'),
         name: 'Interpretation',
         meta: { title: 'interpretation', icon: 'interpretation', noCache: false }
       }
