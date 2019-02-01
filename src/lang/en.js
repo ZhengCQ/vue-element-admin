@@ -104,6 +104,14 @@ export default {
     imageUploadTips: 'Since I was using only the vue@1 version, and it is not compatible with mockjs at the moment, I modified it myself, and if you are going to use it, it is better to use official version.'
   },
   table: {
+    product_id: 'ID',
+    product_manager: 'Manager',
+    product_name: 'Name',
+    status: 'Status',
+    product_class: 'Class',
+    online: 'ONLINE',
+    offline: 'OFLINE',
+
     dynamicTips1: 'Fixed header, sorted by header order',
     dynamicTips2: 'Not fixed header, sorted by click order',
     dragTips1: 'The default order',
@@ -120,7 +128,6 @@ export default {
     date: 'Date',
     author: 'Author',
     readings: 'Readings',
-    status: 'Status',
     actions: 'Actions',
     edit: 'Edit',
     publish: 'Publish',

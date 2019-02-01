@@ -120,7 +120,6 @@ export default {
     date: 'Fecha',
     author: 'Autor',
     readings: 'Lector',
-    status: 'Estado',
     actions: 'Acciones',
     edit: 'Editar',
     publish: 'Publicar',
