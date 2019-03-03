@@ -8,7 +8,7 @@
         <lang-select class="set-language"/>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="getUserInfoname">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
@@ -124,7 +124,7 @@ export default {
         this.passwordType = 'password'
       }
     },
-    handleLogin() {
+    /* handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
@@ -138,6 +138,17 @@ export default {
           console.log('error submit!!')
           return false
         }
+      })
+    }, */
+    // not valid
+    handleLogin() {
+      this.loading = true
+      this.$store.dispatch('LoginByUsername', this.loginForm).then(() => {
+        this.loading = false
+        console.log(this.redirect)
+        this.$router.push({ path: this.redirect || '/' })
+      }).catch(() => {
+        this.loading = false
       })
     },
     afterQRScan() {

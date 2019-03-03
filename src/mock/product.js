@@ -9,7 +9,7 @@ for (let i = 0; i < count; i++) {
     timestamp: +Mock.Random.date('T'),
     'product_manager|1': ['罗宏敏', '汤丽慧', '翟晶'],
     'product_class|1': ['OCLT', 'FGDP'],
-    'product_name|1': ['叶酸', '酒精', 'APOE'],
+    'product_name|1': ['叶酸', '酒精', 'APOE', '肥厚性心肌病', '阵发性室上速', '遗传性肿瘤', '遗传性高血脂'],
     'status|1': ['上线', '下线'],
     id: 'FGDP' + '@increment'
   }))
@@ -18,7 +18,6 @@ for (let i = 0; i < count; i++) {
 export default {
   getList: config => {
     const { product_manager, status, product_name, page = 4, limit = 20, sort } = param2Obj(config.url)
-    console.log(status)
     let mockList = List.filter(item => {
       if (product_manager && item.product_manager !== product_manager) return false
       if (status && item.status !== status) return false

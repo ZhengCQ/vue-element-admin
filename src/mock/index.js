@@ -27,7 +27,7 @@ Mock.mock(/\/user\/info\.*/, 'get', loginAPI.getUserInfo)
 // 文章相关
 Mock.mock(/\/product\/list/, 'get', productAPI.getList)
 Mock.mock(/\/product\/update/, 'get', productAPI.updateArticle)
-Mock.mock(/\/product\/create/, 'get', productAPI.createProduts)
+Mock.mock(/\/product\/create/, 'post', productAPI.createProduts)
 Mock.mock(/\/product\/pv/, 'get', productAPI.getPv)
 
 Mock.mock(/\/article\/list/, 'get', articleAPI.getList)
