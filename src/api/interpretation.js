@@ -16,6 +16,22 @@ export function getPrimary(name) {
   })
 }
 
+export function getSecondary(name) {
+  return request({
+    url: '/disease/all_secondary',
+    method: 'get',
+    params: { name }
+  })
+}
+
+export function getDisease(name) {
+  return request({
+    url: '/disease/all_disease',
+    method: 'get',
+    params: { name }
+  })
+}
+
 export function fetchProduct(id) {
   return request({
     url: '/product/detail',
@@ -32,17 +48,17 @@ export function fetchPv(pv) {
   })
 }
 
-export function createProduct(data) {
+export function createDataForm(data) {
   return request({
-    url: '/product/create',
+    url: '/disease/add_disease',
     method: 'post',
     data
   })
 }
 
-export function updateProduct(data) {
+export function updateDataForm(data) {
   return request({
-    url: '/product/update',
+    url: '/disease/edit_disease',
     method: 'post',
     data
   })

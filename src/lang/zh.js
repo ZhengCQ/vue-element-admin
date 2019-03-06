@@ -124,6 +124,8 @@ export default {
     disease_name: '疾病名称',
     primary_name: '一级分类',
     secondary_name: '二级分类',
+    indicate_name: '指标名称',
+    knowledge_name: '相关知识库',
     dynamicTips1: '固定表头, 按照表头顺序排序',
     dynamicTips2: '不固定表头, 按照点击顺序排序',
     dragTips1: '默认顺序',
