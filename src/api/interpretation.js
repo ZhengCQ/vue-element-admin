@@ -16,19 +16,19 @@ export function getPrimary(name) {
   })
 }
 
-export function getSecondary(name) {
+export function getSecondary(primary_name) {
   return request({
     url: '/disease/all_secondary',
     method: 'get',
-    params: { name }
+    params: { primary_name }
   })
 }
 
-export function getDisease(name) {
+export function getDisease(secondary_name) {
   return request({
     url: '/disease/all_disease',
     method: 'get',
-    params: { name }
+    params: { secondary_name }
   })
 }
 
@@ -52,7 +52,7 @@ export function createDataForm(data) {
   return request({
     url: '/disease/add_disease',
     method: 'post',
-    data
+    params: data
   })
 }
 

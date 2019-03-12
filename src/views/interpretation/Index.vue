@@ -14,9 +14,9 @@
           <span>{{ scope.row.disease_code }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.disease_name')" prop="disease_name" align="center" width="160px" sortable>
+      <el-table-column :label="$t('table.indicate_name')" prop="indicate_name" align="center" width="160px" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.disease_name }}</span>
+          <span>{{ scope.row.indicate_name }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.primary_name')" prop="primary_name" align="center" width="160px" sortable>
@@ -46,9 +46,9 @@
     <!--新增编辑表单 开始-->
     <addEditForm
                   :dialogStatus="dialogStatus"
-                  :dialogFormVisible="dialogFormVisible"
-                  :temp="temp"
-                  @cancel="dialogFormVisible = false;"></addEditForm>
+                  :dialogFormVisible="dialogVisible"
+                  :dialogFormInfo="dialogFormInfo"
+                  @cancel="dialogVisible = false;"></addEditForm>
     <!--新增编辑表单 结束-->
   </div>
 </template>
@@ -71,14 +71,13 @@ export default {
         page_size: 20,
         sort: '+id'
       },
-      temp: {
-        disease_name: '',
+      dialogFormInfo: {
         primary_name: '',
         secondary_name: '',
         indicate_name: '',
-        knowledge_name: ''
+        DiseaseKnowledges: ''
       },
-      dialogFormVisible: false,
+      dialogVisible: false,
       dialogStatus: ''
     }
   },
@@ -121,29 +120,22 @@ export default {
     },
 
     resetTemp() {
-      this.temp = {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: '上线',
-        indicators: '',
-        appendixs: '',
-        agencies: ''
+      this.dialogFormInfo = {
+        primary_name: '',
+        secondary_name: '',
+        indicate_name: '',
+        DiseaseKnowledges: ''
       }
     },
     handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
-      this.dialogFormVisible = true
+      this.dialogVisible = true
     },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      console.log(this.temp)
+      this.dialogFormInfo = Object.assign({}, row) // copy obj
       this.dialogStatus = 'update'
-      this.dialogFormVisible = true
+      this.dialogVisible = true
     }
   }
 }
