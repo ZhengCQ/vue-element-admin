@@ -36,21 +36,12 @@
   </div>
 </template>
 <script>
+import { glistKnowlege, pdeleteKnowlege } from '@/api/knowledges'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
-import addEditForm from './Form'
+import addEditForm from '../Form'
 export default {
   name: 'ComplexTable',
   components: { addEditForm, Pagination },
-  props: {
-    glistKnowlege: {
-      type: Function,
-      default: null
-    },
-    pdeleteKnowlege: {
-      type: Function,
-      default: null
-    }
-  },
   data() {
     return {
       tableKey: 0,
@@ -79,7 +70,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      this.glistKnowlege(this.listQuery).then(response => {
+      glistKnowlege(this.listQuery).then(response => {
         this.tableList = response.data.results
         this.total = response.data.total
         // Just to simulate the time of the request
@@ -91,10 +82,11 @@ export default {
     async handleDelete(row) {
       if (confirm('确定要删除吗？')) {
         this.deleted.id = row.id
-        await this.pdeleteKnowlege(this.deleted)
+        await pdeleteKnowlege(this.deleted)
         this.getList(1)
       }
     },
+
     sortChange(data) {
       const { prop, order } = data
       if (prop === 'id') {
