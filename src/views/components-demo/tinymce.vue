@@ -1,9 +1,5 @@
 <template>
   <div class="components-container">
-    <code>
-      {{ $t('components.tinymceTips') }}
-      <a target="_blank" class="link-type" href="https://panjiachen.github.io/vue-element-admin-site/component/rich-editor.html"> {{ $t('components.documentation') }}</a>
-    </code>
     <div>
       <tinymce :height="300" v-model="content"/>
     </div>

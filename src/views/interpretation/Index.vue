@@ -5,7 +5,6 @@
     <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
     <!--新增 结束-->
     <!--数据列表上方 结束-->
-
     <!--数据列表表单 开始-->
     <el-table v-loading="listLoading" :key="tableKey" :data="tableList" border fit highlight-current-row style="width: 100%;" @sort-change="sortChange">
       <el-table-column type="index" label="No." width="70px" align="center" />
@@ -38,22 +37,16 @@
       </el-table-column>
     </el-table>
     <!--数据列表表单 结束-->
-
     <!--页码 开始-->
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.page_size" @pagination="getList" />
     <!--页码 结束-->
-
     <!--新增编辑表单 开始-->
-    <addEditForm
-                  :dialogStatus="dialogStatus"
-                  :dialogFormVisible="dialogVisible"
-                  :dialogFormInfo="dialogFormInfo"
-                  @cancel="dialogVisible = false;"></addEditForm>
+    <addEditForm :dialogStatus="dialogStatus" :dialogFormVisible="dialogVisible" :dialogFormInfo="dialogFormInfo" @cancel="dialogVisible = false;"></addEditForm>
     <!--新增编辑表单 结束-->
   </div>
 </template>
 <script>
-import { fetchList } from '@/api/interpretation'
+import { fetchList, deleteDisease } from '@/api/interpretation'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import addEditForm from './Form'
 
@@ -77,6 +70,9 @@ export default {
         indicate_name: '',
         DiseaseKnowledges: ''
       },
+      deleted: {
+        id: null
+      },
       dialogVisible: false,
       dialogStatus: ''
     }
@@ -88,7 +84,11 @@ export default {
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
-        this.tableList = response.data.diseases
+        this.tableList = response.data.results
+        for (const i of this.tableList) {
+          i.disease_code = (Array(4).join('0') + i.disease_code).slice(-4) // 得到特定长度
+          // i.disease_code = i.primary_code + i.disease_code // 更替disase_code
+        }
         this.total = response.data.total
         // Just to simulate the time of the request
         setTimeout(() => {
@@ -96,10 +96,17 @@ export default {
         }, 1.5 * 1000)
       })
     },
-    handleDelete(row) {
-      console.log(row)
+    async handleDelete(row) {
+      if (confirm('确定要删除吗？')) {
+        this.deleted.disease_code = row.disease_code
+        const info = await deleteDisease(this.deleted)
+        if (info.status === 200) {
+          this.$message('指标项:' + ';删除' + '成功')
+        }
+        console.log(info)
+        this.getList(1)
+      }
     },
-
     sortChange(data) {
       const { prop, order } = data
       if (prop === 'id') {
@@ -139,4 +146,5 @@ export default {
     }
   }
 }
+
 </script>

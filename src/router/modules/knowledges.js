@@ -8,28 +8,28 @@ const knowledgesRouter = {
   meta: { title: 'knowledges', icon: 'knowledges' },
   children: [
     {
-      path: 'drugs',
-      component: () => import('@/views/svg-icons/index'),
-      name: 'Drugs',
-      meta: { title: 'drugs', icon: 'knowledges', noCache: false }
+      path: 'drug',
+      component: () => import('@/views/knowledges/drug/index'),
+      name: 'Drug',
+      meta: { title: 'drugs', icon: 'yaowu', noCache: false }
     },
     {
       path: 'disease',
-      component: () => import('@/views/svg-icons/index'),
+      component: () => import('@/views/knowledges/disease/index'),
       name: 'Disease',
-      meta: { title: 'disease', icon: 'knowledges', noCache: false }
+      meta: { title: 'disease', icon: 'jibing', noCache: false }
     },
     {
       path: 'character',
-      component: () => import('@/views/svg-icons/index'),
+      component: () => import('@/views/knowledges/personal/index'),
       name: 'Character',
-      meta: { title: 'character', icon: 'knowledges', noCache: false }
+      meta: { title: 'character', icon: 'tezheng', noCache: false }
     },
     {
       path: 'mendelian',
       component: () => import('@/views/svg-icons/index'),
       name: 'Mendelian',
-      meta: { title: 'mendelian', icon: 'knowledges', noCache: false }
+      meta: { title: 'mendelian', icon: 'danjiyinyichuanbing', noCache: false }
     }
   ]
 }

@@ -32,22 +32,6 @@ export function getDisease(secondary_name) {
   })
 }
 
-export function fetchProduct(id) {
-  return request({
-    url: '/product/detail',
-    method: 'get',
-    params: { id }
-  })
-}
-
-export function fetchPv(pv) {
-  return request({
-    url: '/product/pv',
-    method: 'get',
-    params: { pv }
-  })
-}
-
 export function createDataForm(data) {
   return request({
     url: '/disease/add_disease',
@@ -61,5 +45,13 @@ export function updateDataForm(data) {
     url: '/disease/edit_disease',
     method: 'post',
     data
+  })
+}
+
+export function deleteDisease(id) {
+  return request({
+    url: '/disease/delete_disease',
+    method: 'get',
+    params: id
   })
 }

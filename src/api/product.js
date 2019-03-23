@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
-export function fetchList(query) {
+export function glistProduct(query) {
   return request({
-    url: '/product/list',
+    url: '/product/list_product',
     method: 'get',
     params: query
   })
@@ -24,18 +24,50 @@ export function fetchPv(pv) {
   })
 }
 
-export function createProduct(data) {
+export function createDataForm(data) {
   return request({
-    url: '/product/create',
+    url: '/product/add_product',
     method: 'post',
     data
   })
 }
 
-export function updateProduct(data) {
+export function updateDataForm(data) {
   return request({
     url: '/product/update',
     method: 'post',
     data
+  })
+}
+
+export function gdeleteProduct(id) {
+  return request({
+    url: '/product/delete_product',
+    method: 'get',
+    params: { id }
+  })
+}
+
+export function getPrimary(name) {
+  return request({
+    url: '/disease/all_primary',
+    method: 'get',
+    params: { name }
+  })
+}
+
+export function getSecondary(primary_name) {
+  return request({
+    url: '/disease/all_secondary',
+    method: 'get',
+    params: { primary_name }
+  })
+}
+
+export function getDisease(secondary_name) {
+  return request({
+    url: '/disease/all_disease',
+    method: 'get',
+    params: { secondary_name }
   })
 }

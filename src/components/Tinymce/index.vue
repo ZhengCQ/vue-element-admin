@@ -1,9 +1,9 @@
 <template>
   <div :class="{fullscreen:fullscreen}" class="tinymce-container editor-container">
-    <textarea :id="tinymceId" class="tinymce-textarea"/>
-    <div class="editor-custom-btn-container">
+    <textarea :id="tinymceId" :value="value" class="tinymce-textarea"/>
+    <!--div class="editor-custom-btn-container">
       <editorImage color="#1890ff" class="editor-upload-btn" @successCBK="imageSuccessCBK"/>
-    </div>
+    </div-->
   </div>
 </template>
 
@@ -50,8 +50,8 @@ export default {
       tinymceId: this.id,
       fullscreen: false,
       languageTypeList: {
-        'en': 'en',
-        'zh': 'zh_CN'
+        'zh': 'zh_CN',
+        'en': 'en'
       }
     }
   },
@@ -62,9 +62,11 @@ export default {
   },
   watch: {
     value(val) {
-      if (!this.hasChange && this.hasInit) {
-        this.$nextTick(() =>
-          window.tinymce.get(this.tinymceId).setContent(val || ''))
+      if (window.tinymce.activeEditor.getContent() !== val || this.hasInit) {
+        window.tinymce.activeEditor.setContent(val)
+        this.hasInit = false
+        // this.$nextTick(() =>
+        // window.tinymce.get(this.tinymceId).setContent(val || ''))
       }
     },
     language() {
@@ -92,12 +94,19 @@ export default {
         selector: `#${this.tinymceId}`,
         height: this.height,
         body_class: 'panel-body ',
+        font_formats: "微软雅黑='微软雅黑';宋体='宋体';黑体='黑体';仿宋='仿宋';楷体='楷体';隶书='隶书';幼圆='幼圆';Arial='Arial';Verdana='Verdana';Helvetica='Helvetica';",
         object_resizing: false,
         toolbar: this.toolbar.length > 0 ? this.toolbar : toolbar,
         menubar: this.menubar,
         plugins: plugins,
         end_container_on_empty_block: true,
-        powerpaste_word_import: 'clean',
+        external_plugins: {
+          'powerpaste': 'plugins/powerpaste3.3.3-308/plugin.min.js'
+        },
+        powerpaste_word_import: 'merge',
+        powerpaste_html_import: 'merge',
+        powerpaste_allow_local_images: true,
+        paste_data_images: true,
         code_dialog_height: 450,
         code_dialog_width: 1000,
         advlist_bullet_styles: 'square',

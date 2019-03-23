@@ -6,7 +6,7 @@
                :peditKnowlege="peditKnowlege"/>
 </template>
 <script>
-import { glistKnowlege, pdeleteKnowlege, paddKnowlege, peditKnowlege } from '@/api/knowledges/disease.js'
+import { glistKnowlege, pdeleteKnowlege, paddKnowlege, peditKnowlege } from '@/api/knowledges/personal.js'
 import maincontent from '../Main'
 export default {
   components: {

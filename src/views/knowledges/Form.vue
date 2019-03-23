@@ -19,15 +19,15 @@
 </template>
 <script type="text/javascript">
 import Tinymce from '@/components/Tinymce'
-import { paddKnowlege, peditKnowlege } from '@/api/knowledges'
+// import { paddKnowlege, peditKnowlege } from '@/api/knowledges'
 
 export default {
   components: { Tinymce },
   data() {
     return {
       textMap: {
-        update: 'Edit',
-        create: 'Create'
+        update: '编辑',
+        create: '新建'
       },
       dialogVisible: this.dialogFormVisible
     }
@@ -42,6 +42,13 @@ export default {
     },
     dialogFormInfo: {
       type: Object
+    },
+    paddKnowlege: {
+      type: Function,
+      default: null
+    },
+    peditKnowlege: {
+      default: null
     }
   },
   watch: {
@@ -54,7 +61,7 @@ export default {
       this.$emit('cancel')
     },
     async createData() {
-      const range = await paddKnowlege(this.dialogFormInfo)
+      const range = await this.paddKnowlege(this.dialogFormInfo)
       if (range) {
         this.$message('素材:' + this.dialogFormInfo.material_name + ';创建' + '成功')
         this.onCancel()
@@ -62,7 +69,7 @@ export default {
     },
     async updateData() {
       const tempData = Object.assign({}, this.dialogFormInfo)
-      const range = await peditKnowlege(tempData)
+      const range = await this.peditKnowlege(tempData)
       if (range) {
         this.$message('素材:' + this.dialogFormInfo.material_name + ';更新' + '成功')
         this.onCancel()

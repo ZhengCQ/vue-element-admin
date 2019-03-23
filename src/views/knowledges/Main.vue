@@ -21,7 +21,7 @@
       <el-table-column :label="$t('table.actions')" align="center" width="320px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('table.edit') }}</el-button>
-          <el-button v-if="scope.row.status!='deleted'" size="mini" type="danger" @click="handleDelete(scope.row)">{{ $t('table.delete') }}
+          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">{{ $t('table.delete') }}
           </el-button>
         </template>
       </el-table-column>
@@ -30,12 +30,19 @@
     <!--页码 开始-->
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.page_size" @pagination="getList" />
     <!--页码 结束-->
-    <addEditForm :dialogStatus="dialogStatus" :dialogFormVisible="dialogVisible" :dialogFormInfo="dialogFormInfo" @cancel="dialogVisible = false;getList()"></addEditForm>
+    <addEditForm
+                 :dialogStatus="dialogStatus"
+                 :dialogFormVisible="dialogVisible"
+                 :dialogFormInfo="dialogFormInfo"
+                 :paddKnowlege="paddKnowlege"
+                 :peditKnowlege="peditKnowlege"
+                 @cancel="dialogVisible = false;getList()" />
     <!--新增编辑表单 开始-->
     <!--新增编辑表单 结束-->
   </div>
 </template>
 <script>
+import { prefixInteger } from '@/utils/prefixinteger'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import addEditForm from './Form'
 export default {
@@ -48,6 +55,13 @@ export default {
     },
     pdeleteKnowlege: {
       type: Function,
+      default: null
+    },
+    paddKnowlege: {
+      type: Function,
+      default: null
+    },
+    peditKnowlege: {
       default: null
     }
   },
@@ -80,8 +94,12 @@ export default {
     getList() {
       this.listLoading = true
       this.glistKnowlege(this.listQuery).then(response => {
+        console.log(response.data)
         this.tableList = response.data.results
         this.total = response.data.total
+        for (const i of this.tableList) {
+          i.id = prefixInteger(i.id, 5)
+        }
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
@@ -91,7 +109,11 @@ export default {
     async handleDelete(row) {
       if (confirm('确定要删除吗？')) {
         this.deleted.id = row.id
-        await this.pdeleteKnowlege(this.deleted)
+        const info = await this.pdeleteKnowlege(this.deleted)
+        if (info.status === 200) {
+          this.$message('素材:' + row.material_name + ';删除' + '成功')
+        }
+        console.log(info)
         this.getList(1)
       }
     },

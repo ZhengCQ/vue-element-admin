@@ -5,7 +5,7 @@
       <!--搜索-->
       <el-input :placeholder="$t('table.product_name')" v-model="listQuery.product_name" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-input :placeholder="$t('table.product_manager')" v-model="listQuery.product_manager" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.state" :placeholder="$t('table.status')" clearable class="filter-item" style="width: 130px">
+      <el-select v-model="listQuery.status" :placeholder="$t('table.status')" clearable class="filter-item" style="width: 130px">
         <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('table.search') }}</el-button>
@@ -15,6 +15,7 @@
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">{{ $t('table.export') }}</el-button>
     </div>
     <!--数据列表上方 结束-->
+
     <!--数据列表表单 开始-->
     <el-table v-loading="listLoading" :key="tableKey" :data="productsList" border fit highlight-current-row style="width: 100%;" @sort-change="sortChange">
       <el-table-column type="index" label="No." width="70px" align="center" />
@@ -40,18 +41,17 @@
       </el-table-column>
       <el-table-column :label="$t('table.status')" class-name="status-col" width="160px">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.state | statusFilter">{{ scope.row.state}}</el-tag>
+          <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
         </template>
       </el-table-column>
-
       <el-table-column :label="$t('table.actions')" align="center" width="320px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('table.edit') }}</el-button>
-          <el-button v-if="scope.row.state!='上线'" size="mini" type="success" @click="handleModifyStatus(scope.row,'上线')">{{ $t('table.online') }}
+          <el-button v-if="scope.row.status!='上线'" size="mini" type="success" @click="handleModifyStatus(scope.row,'上线')">{{ $t('table.online') }}
           </el-button>
-          <el-button v-if="scope.row.state!='下线'" size="mini" @click="handleModifyStatus(scope.row,'下线')">{{ $t('table.offline') }}
+          <el-button v-if="scope.row.status!='下线'" size="mini" @click="handleModifyStatus(scope.row,'下线')">{{ $t('table.offline') }}
           </el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">{{ $t('table.delete') }}
+          <el-button v-if="scope.row.status!='deleted'" size="mini" type="danger" @click="handleModifyStatus(scope.row,'deleted')">{{ $t('table.delete') }}
           </el-button>
         </template>
       </el-table-column>
@@ -63,12 +63,33 @@
     <!--页码 结束-->
 
     <!--新增编辑表单 开始-->
-    <addEditForm
-                 :dialogStatus="dialogStatus"
-                 :dialogFormVisible="dialogVisible"
-                 :dialogFormInfo="dialogFormInfo"
-                 :statusOptions="statusOptions"
-                 @cancel="dialogVisible = false;getList()" />
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
+        <el-form-item :label="$t('table.product_name')" prop="name">
+          <el-input v-model="temp.name" />
+        </el-form-item>
+        <el-form-item :label="$t('table.product_class')" prop="product_class">
+          <el-select v-model="temp.product_class" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in classTypeOptions" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('table.status')" prop="status">
+          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="检测指标">
+          <el-select v-model="temp.indicators" multiple placeholder="请选择">
+            <el-option v-for="item in indicators" :key="item.id" :label="item.name" :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">{{ $t('table.confirm') }}</el-button>
+      </div>
+    </el-dialog>
     <!--新增编辑表单 结束-->
 
     <!--产品检测项列表 开始-->
@@ -85,15 +106,28 @@
   </div>
 </template>
 <script>
-import { glistProduct, gdeleteProduct } from '@/api/product'
+import { fetchList, fetchPv, createProduct, updateProduct } from '@/api/product'
 import { parseTime } from '@/utils'
 import waves from '@/directive/waves' // Waves directive
-import addEditForm from './Form'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
+
+const calendarTypeOptions = [
+  { key: 'CN', display_name: 'China' },
+  { key: 'US', display_name: 'USA' },
+  { key: 'JP', display_name: 'Japan' },
+  { key: 'EU', display_name: 'Eurozone' }
+]
+
+const indicators = [
+  { id: '10', name: '运动恢复能力' },
+  { id: '20', name: '抗氧化' },
+  { id: '30', name: '爆发力' },
+  { id: '40', name: '鼻咽癌' }
+]
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination, addEditForm },
+  components: { Pagination },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -116,18 +150,9 @@ export default {
         product_manager: undefined,
         product_name: undefined,
         sort: '+id',
-        state: undefined
+        status: undefined
       },
-      dialogFormInfo: {
-        product_name: '',
-        product_class: '',
-        product_manager: '',
-        state: '',
-        diseases: [],
-        drug: [],
-        personality: []
-      },
-      dialogVisible: false,
+      dialogFormVisible: false,
       dialogPvVisible: false,
       pvData: [],
       dialogStatus: '',
@@ -135,7 +160,26 @@ export default {
         update: 'Edit',
         create: 'Create'
       },
+      calendarTypeOptions,
+      indicators,
       statusOptions: ['上线', '下线'],
+      classTypeOptions: ['FGDP', 'OCLT'],
+      // 表单输入规则
+      rules: {
+        name: [{ required: true, message: 'product name is required', trigger: 'change' }],
+        product_class: [{ required: true, message: 'product_class is required', trigger: 'change' }],
+        status: [{ required: true, message: 'status is required', trigger: 'blur' }]
+      },
+      temp: {
+        id: undefined,
+        importance: 1,
+        remark: '',
+        timestamp: new Date(),
+        title: '',
+        type: '',
+        status: '上线',
+        indicators: ''
+      },
       downloadLoading: false
     }
   },
@@ -145,9 +189,8 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      glistProduct(this.listQuery).then(response => {
-        console.log(response.data)
-        this.productsList = response.data.results
+      fetchList(this.listQuery).then(response => {
+        this.productsList = response.data.items
         this.total = response.data.total
 
         // Just to simulate the time of the request
@@ -161,43 +204,94 @@ export default {
       this.getList()
     },
     resetTemp() {
-      this.dialogFormInfo = {
-        product_name: '',
-        product_class: '',
-        product_manager: '',
-        state: '',
-        diseases: [],
-        drug: [],
-        personality: []
+      this.temp = {
+        id: undefined,
+        importance: 1,
+        remark: '',
+        timestamp: new Date(),
+        title: '',
+        type: '',
+        status: '上线',
+        indicators: '',
+        appendixs: '',
+        agencies: ''
       }
     },
     handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
-      this.dialogVisible = true
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
     },
+    createData() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
+          this.temp.author = 'vue-element-admin'
+          createProduct(this.temp).then(() => {
+            // this.list.unshift(this.temp)
+            this.dialogFormVisible = false
+            this.$notify({
+              title: '成功',
+              message: '创建成功',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
+
+    handleFetchItems(pv) {
+      fetchPv(pv).then(response => {
+        this.pvData = response.data.pvData
+        this.dialogPvVisible = true
+      })
+    },
+
     handleUpdate(row) {
-      this.resetTemp()
-      this.dialogFormInfo = Object.assign({}, row) // copy obj
+      this.temp = Object.assign({}, row) // copy obj
+      this.temp.timestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
-      this.dialogVisible = true
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
     },
+
+    updateData() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          const tempData = Object.assign({}, this.temp)
+          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+          updateProduct(tempData).then(() => {
+            for (const v of this.list) {
+              if (v.id === this.temp.id) {
+                const index = this.list.indexOf(v)
+                this.list.splice(index, 1, this.temp)
+                break
+              }
+            }
+            this.dialogFormVisible = false
+            this.$notify({
+              title: '成功',
+              message: '更新成功',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
+
     handleModifyStatus(row, status) {
       this.$message({
         message: '操作成功',
         type: 'success'
       })
-      row.state = status
-    },
-    async handleDelete(row) {
-      if (confirm('确定要删除吗？')) {
-        const info = await gdeleteProduct(row.id)
-        if (info.status === 200) {
-          this.$message('产品:' + row.product_name + ';删除' + '成功')
-        }
-        console.log(info)
-        this.getList(1)
-      }
+      row.status = status
     },
     sortChange(data) {
       const { prop, order } = data
@@ -213,6 +307,7 @@ export default {
       }
       this.handleFilter()
     },
+
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
