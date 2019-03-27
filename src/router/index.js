@@ -9,7 +9,7 @@ import Layout from '@/views/layout/Layout'
 /* Router Modules */
 // import componentsRouter from './modules/components'
 // import chartsRouter from './modules/charts'
-// import tableRouter from './modules/table'
+import tableRouter from './modules/table'
 // import nestedRouter from './modules/nested'
 import knowledgesRouter from './modules/knowledges'
 
@@ -166,12 +166,12 @@ export const asyncRouterMap = [
       }
     ]
   },
-  knowledgesRouter
+  knowledgesRouter,
   /** When your routing table is too long, you can split it into small modules**/
   // componentsRouter,
   // chartsRouter,
   // nestedRouter,
-  // tableRouter,
+  tableRouter
 /*
   {
     path: '/example',

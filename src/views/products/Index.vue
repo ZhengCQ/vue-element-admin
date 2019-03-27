@@ -40,7 +40,7 @@
       </el-table-column>
       <el-table-column :label="$t('table.status')" class-name="status-col" width="160px">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.state | statusFilter">{{ scope.row.state}}</el-tag>
+          <el-tag :type="scope.row.state | statusFilter">{{ scope.row.state }}</el-tag>
         </template>
       </el-table-column>
 
@@ -68,6 +68,7 @@
                  :dialogFormVisible="dialogVisible"
                  :dialogFormInfo="dialogFormInfo"
                  :statusOptions="statusOptions"
+                 :treeidRaw="treeid"
                  @cancel="dialogVisible = false;getList()" />
     <!--新增编辑表单 结束-->
 
@@ -96,12 +97,12 @@ export default {
   components: { Pagination, addEditForm },
   directives: { waves },
   filters: {
-    statusFilter(status) {
+    statusFilter(state) {
       const statusMap = {
         上线: 'success',
         下线: 'danger'
       }
-      return statusMap[status]
+      return statusMap[state]
     }
   },
   data() {
@@ -109,6 +110,7 @@ export default {
       tableKey: 0,
       productsList: null,
       total: 0,
+      treeid: 0,
       listLoading: true,
       listQuery: {
         page: 1,
@@ -170,6 +172,7 @@ export default {
         drug: [],
         personality: []
       }
+      this.treeid = 0
     },
     handleCreate() {
       this.resetTemp()

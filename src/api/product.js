@@ -64,10 +64,34 @@ export function getSecondary(primary_name) {
   })
 }
 
-export function getDisease(secondary_name) {
+export function gallDisease(secondary_name) {
   return request({
     url: '/disease/all_disease',
     method: 'get',
     params: { secondary_name }
+  })
+}
+
+export function gallPersonality(secondary_name) {
+  return request({
+    url: '/personal/all_personality',
+    method: 'get',
+    params: { secondary_name }
+  })
+}
+
+export function gallDrug(secondary_name) {
+  return request({
+    url: '/drug/all_drug',
+    method: 'get',
+    params: { secondary_name }
+  })
+}
+
+export function glistIndicate(primary_name, secondary_name) {
+  return request({
+    url: '/product/list_indicate',
+    method: 'get',
+    params: { primary_name, secondary_name }
   })
 }
