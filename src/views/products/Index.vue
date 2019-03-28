@@ -35,9 +35,10 @@
       </el-table-column>
       <el-table-column :label="$t('table.product_name')" prop="product_name" align="center" width="160px" sortable>
         <template slot-scope="scope">
-          <span class="link-type" @click="handleFetchItems(scope.row.pageviews)">{{ scope.row.product_name }}</span>
+          <span class="link-type" @click="handleFetchItems(scope.row)">{{ scope.row.product_name }}</span>
         </template>
       </el-table-column>
+
       <el-table-column :label="$t('table.status')" class-name="status-col" width="160px">
         <template slot-scope="scope">
           <el-tag :type="scope.row.state | statusFilter">{{ scope.row.state }}</el-tag>
@@ -49,7 +50,7 @@
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('table.edit') }}</el-button>
           <el-button v-if="scope.row.state!='上线'" size="mini" type="success" @click="handleModifyStatus(scope.row,'上线')">{{ $t('table.online') }}
           </el-button>
-          <el-button v-if="scope.row.state!='下线'" size="mini" @click="handleModifyStatus(scope.row,'下线')">{{ $t('table.offline') }}
+          <el-button v-if="scope.row.state!='下线'" size="mini" type="warning" @click="handleModifyStatus(scope.row,'下线')">{{ $t('table.offline') }}
           </el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope.row)">{{ $t('table.delete') }}
           </el-button>
@@ -68,33 +69,31 @@
                  :dialogFormVisible="dialogVisible"
                  :dialogFormInfo="dialogFormInfo"
                  :statusOptions="statusOptions"
-                 :treeidRaw="treeid"
+                 :treeFormData="treeFormData"
                  @cancel="dialogVisible = false;getList()" />
     <!--新增编辑表单 结束-->
-
-    <!--产品检测项列表 开始-->
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
+    <!--产品详情表单 开始-->
+    <el-dialog :visible.sync="dialogPvVisible" title="产品详情">
+      <tree-table ref="TreeTable" :key="treekey" :default-expand-all="false" :data="treeFormData" :columns="treecolumns" border>
+      </tree-table>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogPvVisible = false">{{ $t('table.confirm') }}</el-button>
       </span>
     </el-dialog>
-    <!--产品检测项列表 结束-->
+    <!--产品详情表单 结束-->
   </div>
 </template>
 <script>
-import { glistProduct, gdeleteProduct } from '@/api/product'
+import { glistProduct, gdeleteProduct, gchangeProductStatus } from '@/api/product'
 import { parseTime } from '@/utils'
 import waves from '@/directive/waves' // Waves directive
 import addEditForm from './Form'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
+import treeTable from '@/components/TreeTable'
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination, addEditForm },
+  components: { Pagination, addEditForm, treeTable },
   directives: { waves },
   filters: {
     statusFilter(state) {
@@ -110,7 +109,6 @@ export default {
       tableKey: 0,
       productsList: null,
       total: 0,
-      treeid: 0,
       listLoading: true,
       listQuery: {
         page: 1,
@@ -121,16 +119,35 @@ export default {
         state: undefined
       },
       dialogFormInfo: {
-        product_name: '',
-        product_class: '',
-        product_manager: '',
-        state: '',
-        diseases: [],
-        drug: [],
-        personality: []
+        product_name: null,
+        product_class: null,
+        product_manager: null,
+        state: null,
+        results: []
       },
       dialogVisible: false,
       dialogPvVisible: false,
+      treekey: 1,
+      treecolumns: [{
+        label: '编号',
+        key: 'id',
+        expand: true
+      },
+      {
+        label: '分类',
+        key: 'event'
+      },
+      {
+        label: '数目',
+        key: 'number'
+      },
+      {
+        label: '详情',
+        key: 'detail',
+        width: 200
+        // align: 'left'
+      }],
+      treeFormData: [],
       pvData: [],
       dialogStatus: '',
       textMap: {
@@ -148,10 +165,8 @@ export default {
     getList() {
       this.listLoading = true
       glistProduct(this.listQuery).then(response => {
-        console.log(response.data)
         this.productsList = response.data.results
         this.total = response.data.total
-
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
@@ -162,17 +177,20 @@ export default {
       this.listQuery.page = 1
       this.getList()
     },
+    handleFetchItems(row) {
+      this.dialogPvVisible = true
+      console.log(row)
+      this.treeFormData = JSON.parse(row.front_end_json)
+    },
     resetTemp() {
       this.dialogFormInfo = {
-        product_name: '',
-        product_class: '',
-        product_manager: '',
-        state: '',
-        diseases: [],
-        drug: [],
-        personality: []
+        product_name: null,
+        product_class: null,
+        product_manager: null,
+        state: null,
+        results: []
       }
-      this.treeid = 0
+      this.treeFormData = []
     },
     handleCreate() {
       this.resetTemp()
@@ -182,15 +200,19 @@ export default {
     handleUpdate(row) {
       this.resetTemp()
       this.dialogFormInfo = Object.assign({}, row) // copy obj
+      this.treeFormData = JSON.parse(row.front_end_json)
       this.dialogStatus = 'update'
       this.dialogVisible = true
     },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作成功',
-        type: 'success'
-      })
-      row.state = status
+    async handleModifyStatus(row, status) {
+      const info = await gchangeProductStatus(row.id, status)
+      if (info) {
+        this.$message({
+          message: '操作成功',
+          type: 'success'
+        })
+      }
+      this.getList()
     },
     async handleDelete(row) {
       if (confirm('确定要删除吗？')) {

@@ -48,7 +48,7 @@
       <!--树状表格开始-->
     </div>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
+      <el-button @click="dialogVisible = false">{{ $t('table.cancel') }}</el-button>
       <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">{{ $t('table.confirm') }}</el-button>
     </div>
   </el-dialog>
@@ -67,12 +67,12 @@ export default {
       },
       // 树形表格 表头
       treekey: 1,
-      treeid: this.treeidRaw,
-      treecolumns: [{
+      treeid: {},
+      /* {
         label: '选择框',
         checkbox: true
-      },
-      {
+      },*/
+      treecolumns: [{
         label: '编号',
         key: 'id',
         expand: true
@@ -96,9 +96,10 @@ export default {
         key: 'operation'
       }],
       // 树形表格 数据
-      treedata: [],
+      treedata: this.treeFormData,
       primary_name: null,
       primaryLst: [],
+      secondaryLst: [],
       secondary_name: null,
       indicate_name: [],
       textMap: {
@@ -110,7 +111,7 @@ export default {
       classTypeOptions: ['FGDP', 'OCLT'],
       // 表单输入规则
       rules: {
-        name: [{ required: true, message: '产品名称必填且名称需唯一', trigger: 'change' }],
+        name: [{ required: true, message: '产品名称必填且名称需唯一', trigger: 'focus' }],
         product_class: [{ required: true, message: 'product_class is required', trigger: 'change' }],
         status: [{ required: true, message: 'status is required', trigger: 'blur' }],
         product_manager: [{ required: true, message: '产品经理必选', trigger: 'change' }]
@@ -133,8 +134,8 @@ export default {
     }
   },
   props: {
-    treeidRaw: {
-      type: Number
+    treeFormData: {
+      type: Array
     },
     dialogStatus: {
       type: String
@@ -151,8 +152,24 @@ export default {
     }
   },
   watch: {
+    // prop 传递dialog新建和编辑表格，变量再赋值
     dialogFormVisible(val) {
       this.dialogVisible = val
+    },
+    // 树表数据，从prop获取的变量 再赋值
+    treeFormData(val) {
+      this.treedata = val
+    },
+    // 从 treedata中获取已经存在的一级分类和二级分类的数组，
+    treedata(val) {
+      this.primaryLst = []
+      this.secondaryLst = []
+      for (var i = 0; i < val.length; i++) {
+        this.primaryLst.push(val[i].event)
+        for (var j = 0; j < val[i].children.length; j++) {
+          this.secondaryLst.push(val[i].children[j].event)
+        }
+      }
     }
   },
   methods: {
@@ -162,41 +179,40 @@ export default {
     handleSelect(item) {
       console.log(item)
     },
+    // 为解决Converting circular structure to JSON问题，再重新存一次数据
+    circleJson(obj) {
+      var results = []
+      for (var i = 0; i < obj.length; i++) {
+        const temp = {
+          id: obj[i].id,
+          detail: obj[i].detail,
+          event: obj[i].event,
+          number: obj[i].number,
+          children: []
+        }
+        for (var j = 0; j < obj[i].children.length; j++) {
+          var item = obj[i].children[j]
+          temp.children.push({ id: item.id, detail: item.detail, event: item.event, number: item.number })
+        }
+        results.push(temp)
+      }
+      return results
+    },
+    // 新建数据
     async createData() {
-      const temp = {
-        name: '',
-        detail: '',
-        number: '',
-        children: []
-      }
-      this.treedata.forEach((item) => {
-        temp.detail = item.detail
-        temp.name = item.event
-        temp.number = item.number
-        item.children.forEach((subitem) => {
-          temp.children.push({
-            detail: subitem.detail,
-            number: subitem.number,
-            name: subitem.event
-          })
-        })
-      })
-      if (temp.name === '常见疾病') {
-        this.dialogFormInfo.diseases = temp
-      } else if (temp.name === '药物代谢') {
-        this.dialogFormInfo.drug = temp
-      } else if (temp.name === '个性特征') {
-        this.dialogFormInfo.personality = temp
-      }
+      this.dialogFormInfo.results = JSON.stringify(this.circleJson(this.treedata))
       const range = await createDataForm(this.dialogFormInfo)
       if (range) {
         this.$message('产品:' + this.dialogFormInfo.product_name + ';创建' + '成功')
-        // this.onCancel()
+        this.onCancel()
         this.treedata = []
       }
     },
+    // 编辑更新数据
     async updateData() {
+      this.dialogFormInfo.results = JSON.stringify(this.circleJson(this.treedata))
       const tempData = Object.assign({}, this.dialogFormInfo)
+      console.log(tempData)
       const range = await updateDataForm(tempData)
       if (range) {
         this.$message('产品:' + this.dialogFormInfo.product_name + ';更新' + '成功')
@@ -267,41 +283,44 @@ export default {
     },
     // 从trsander value中获取数据
     handleTransferData(val) {
-      const tempIndi = [] // 指标项
+      var tempIndi = [] // 指标项
       this.transfer.data.forEach((item, index) => {
         if (item.key in this.transfer.value) {
           tempIndi.push(item.label)
         }
       })
       // 父节点初始化
-      const parent = {
-        id: this.treeid,
+      var parent = {
+        id: '展开/折叠',
         event: this.primary_name,
         number: tempIndi.length,
-        detail: this.secondary_name + ':' + tempIndi.length + '项'
+        detail: this.secondary_name + ':' + tempIndi.length + '项',
+        children: []
       }
       // 子节点初始化
-      const children = {
-        id: this.treeid,
+      var child = {
+        id: null,
         event: this.secondary_name, // 二级菜单
         number: tempIndi.length, // 指标数目
         detail: tempIndi.join(',') // 指标项目
       }
       // 根据参数传回去数据结构
       if (val === 'children') {
-        return children
+        this.treeid[this.primary_name]++
+        child.id = this.treeid[this.primary_name]
+        return child
       } else {
-        parent['children'] = [children]
+        this.treeid[this.primary_name] = 0
+        child.id = this.treeid[this.primary_name]
+        parent.children.push(child)
         return parent
       }
     },
     // 将数据转换成树状表格可接受的数据格式
     handleAddTreeData() {
-      this.primaryLst.push(this.primary_name)
-      this.treeid++
       // 增加一个父节点
       // 从trsander value中获取数据
-      const tempData = this.handleTransferData('parent')
+      var tempData = this.handleTransferData('parent')
       // 将一个父节点增加到tree数据中
       this.treedata.push(tempData)
       this.resetTransfer()
@@ -309,56 +328,51 @@ export default {
     // 增加子节点
     addMenuItem(row, type) {
       // 传回穿越框中获取的数据
-      const tempData = this.handleTransferData('children')
+      var tempData = this.handleTransferData('children')
       // 用于判断是否增加子组件，禁止模块用不了，暂时通过穿越框中的value是否包含数据来判断
-      if (tempData.number > 0) {
-        this.treeid++
+      console.log(row)
+      if (tempData.number > 0 && row.event === this.primary_name) {
         // 修改父节点值
         row.number = row.number + tempData.number
         row.detail = row.detail + ';' + this.secondary_name + ':' + tempData.number + '项'
         // 增加子节点
-        tempData[name] = 'child'
+        tempData.name = 'child'
         this.$refs.TreeTable.addChild(row, tempData)
         this.resetTransfer()
+        this.$message({
+          message: '添加成功',
+          type: 'success'
+        })
       } else {
-        console.log('空值无法增加')
+        this.$message({
+          message: '该指标与一级分类不相符',
+          type: 'warning'
+        })
       }
     },
     // 删除组件
     deleteItem(row) {
-      // 删除子组件是，父组件的值要变化
+      // 使用TreeTbale中的方法来删除组件
+      this.$refs.TreeTable.delete(row)
+      // 删除子组件时，父组件的值的变化
       if (row._parent) {
-        // 减少数目
+        // 父组件减少数目
         row._parent.number = row._parent.number - row.number
-        // 修改detail
+        // 删除子组件时，父组件的详情同步变动减少
+        var detailLst = row._parent.detail.split(';')
+        for (var i = 0; i < detailLst.length; i++) {
+          if (i === row.id) {
+            detailLst.splice(i, 1)
+            i--
+          }
+        }
+        row._parent.detail = detailLst.join(';')
+        // 减少其他
+        this.treeid[row._parent.event]--
       // 删除父组件时，重置pramary name，解锁添加父节点按钮
       } else {
         this.primary_name = null
         this.secondary_name = null
-      }
-      // 使用TreeTbale中的方法来删除组件
-      this.$refs.TreeTable.delete(row)
-      this.treeid--
-    },
-    deleteItem_old(row) {
-      // 自己写
-      // 一级
-      for (var i = 0; i < this.treedata.length; i++) {
-        // 存在子组件
-        if (row.children) {
-          if (this.treedata[i].id === row.id) {
-            this.treedata.splice(i, 1)
-            i--
-          }
-        } else {
-          // 不存在子组件,则遍历子组件（该函数仅适合两级别
-          for (var j = 0; j < this.treedata[i].children.length; j++) {
-            if (this.treedata[i].children[j].id === row.id) {
-              this.treedata[i].children.splice(j, 1)
-              j--
-            }
-          }
-        }
       }
     }
   }

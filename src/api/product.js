@@ -34,7 +34,7 @@ export function createDataForm(data) {
 
 export function updateDataForm(data) {
   return request({
-    url: '/product/update',
+    url: '/product/edit_product',
     method: 'post',
     data
   })
@@ -93,5 +93,13 @@ export function glistIndicate(primary_name, secondary_name) {
     url: '/product/list_indicate',
     method: 'get',
     params: { primary_name, secondary_name }
+  })
+}
+
+export function gchangeProductStatus(id, state) {
+  return request({
+    url: '/product/change_product_status',
+    method: 'get',
+    params: { id, state }
   })
 }
