@@ -2,7 +2,7 @@
   <el-dialog :title="textMap[dialogStatus]" :visible="dialogVisible" @close="onCancel" customClass="customWidth">
     <el-form :rules="rules" :model="dialogFormInfo" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
       <el-form-item :label="$t('table.product_name')" prop="name">
-        <el-input v-model="dialogFormInfo.product_name" />
+        <el-autocomplete class="input" v-model="dialogFormInfo.product_name" :fetch-suggestions="querySearchProduct" placeholder="产品名称" :trigger-on-focus="false" @select="handleSelect"></el-autocomplete>
       </el-form-item>
       <el-form-item :label="$t('table.product_class')" prop="product_class">
         <el-select v-model="dialogFormInfo.product_class" class="filter-item" placeholder="Please select">
@@ -54,7 +54,7 @@
   </el-dialog>
 </template>
 <script type="text/javascript">
-import { getSecondary, gallDisease, gallPersonality, gallDrug, createDataForm, updateDataForm } from '@/api/product'
+import { getSecondary, gallDisease, getProductName, gallPersonality, gallDrug, createDataForm, updateDataForm } from '@/api/product'
 import treeTable from '@/components/TreeTable'
 export default {
   components: { treeTable },
@@ -241,6 +241,26 @@ export default {
       return (list)
     },
     // 获得二级菜单
+    createFilter(queryString) {
+      return (result) => {
+        return (result.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+      }
+    },
+    querySearchProduct(queryString, callback) {
+      var list = []
+      // 从后台获取到对象数组
+      const product_name = this.dialogFormInfo.product_name
+      getProductName(String(product_name)).then((response) => {
+        // 在这里为这个数组中每一个对象加一个value字段, 因为autocomplete只识别value字段并在下拉列中显示
+        for (const i of response.data.product) {
+          list.push({ value: i })
+        }
+        list = queryString ? list.filter(this.createFilter(queryString)) : list
+        callback(list)
+      }).catch((error) => {
+        console.log(error)
+      })
+    },
     handleItemChange(val) {
       // 对应二级菜单显示栏
       setTimeout(_ => {

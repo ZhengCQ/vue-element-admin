@@ -181,6 +181,7 @@ export default {
       this.dialogPvVisible = true
       console.log(row)
       this.treeFormData = JSON.parse(row.front_end_json)
+      console.log(this.treeFormData)
     },
     resetTemp() {
       this.dialogFormInfo = {

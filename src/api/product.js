@@ -103,3 +103,11 @@ export function gchangeProductStatus(id, state) {
     params: { id, state }
   })
 }
+
+export function getProductName(product_name) {
+  return request({
+    url: '/product/get_product_name',
+    method: 'get',
+    params: { product_name }
+  })
+}
