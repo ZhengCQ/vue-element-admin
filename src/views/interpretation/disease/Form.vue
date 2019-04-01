@@ -12,7 +12,7 @@
         <el-autocomplete class="input" v-model="indicateForm.indicate_name" :fetch-suggestions="querySearchIndi" placeholder="请输入指标名称" :trigger-on-focus="false" @select="handleSelect"></el-autocomplete>
       </el-form-item>
       <el-form-item :label="$t('table.knowledge_name')" prop="name">
-        <el-autocomplete class="input" v-model="indicateForm.knowledge_name" :fetch-suggestions="querySearchKlg" placeholder="关联知识库" @select="handleSelect"></el-autocomplete>
+        <el-autocomplete class="input" v-model="indicateForm.knowledge_name" :fetch-suggestions="querySearchKlg" placeholder="关联知识库"  @select="handleSelect"></el-autocomplete>
       </el-form-item>
     </el-form>
     <!--添加位点开始-->
@@ -53,6 +53,9 @@
       <el-form-item :label="$t('table.homAltFrequency')" prop="homAltFrequency">
         <el-input placeholder="请输入Hom Alt Freq值" v-model="siteForm.homAltFrequency" clearable> </el-input>
       </el-form-item>
+      <el-form-item :label="$t('table.reference')" prop="reference">
+        <el-input placeholder="请输入参考文献" type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="siteForm.reference" clearable> </el-input>
+      </el-form-item>
       <el-button @click="onCancelSnp">关闭新增</el-button>
       <el-button type="primary" @click="handleCreateSnps">确定新增</el-button>
     </el-form>
@@ -74,16 +77,16 @@
   <!--新增编辑表单 结束-->
 </template>
 <script type="text/javascript">
-import { getPrimary, getSecondary, getDisease, createDataForm, updateDataForm } from '@/api/interpretation'
-import inEditTable from './inEditTable'
+import { getPrimary, getSecondary, getDisease, glistKnowlege, createDataForm, updateDataForm } from '@/api/interpretation'
+import inEditTable from './../inEditTable'
 
 export default {
   components: { inEditTable },
   data() {
     return {
       textMap: {
-        update: 'Edit',
-        create: 'Create'
+        update: '编辑',
+        create: '新建'
       },
       siteForm: {},
       indicateForm: this.dialogFormInfo,
@@ -146,13 +149,16 @@ export default {
       siteid: 0,
       state1: '',
       dialogVisible: this.dialogFormVisible,
-      explainList: [],
+      explainList: this.inEditForm,
       basesTypeOptions: ['A', 'T', 'C', 'G']
     }
   },
   props: {
     dialogStatus: {
       type: String
+    },
+    inEditForm: {
+      type: Array
     },
     dialogFormVisible: {
       type: Boolean,
@@ -168,6 +174,9 @@ export default {
     },
     dialogFormInfo(val) {
       this.indicateForm = val
+    },
+    inEditForm(val) {
+      this.explainList = val
     }
   },
   methods: {
@@ -230,7 +239,22 @@ export default {
         return (result.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
       }
     },
-    querySearchKlg(queryString, callback) {},
+    // 知识库
+    querySearchKlg(queryString, callback) {
+      var list = []
+      const primary_name = this.indicateForm.primary_name
+      const knowledge_name = this.inEditForm.knowledge_name
+      glistKnowlege(primary_name, knowledge_name).then((response) => {
+        console.log(response.data)
+        for (const i of response.data.result) {
+          if (i) {
+            list.push({ value: i })
+          }
+        }
+        list = queryString ? list.filter(this.createFilter(queryString)) : list
+        callback(list)
+      })
+    },
     handleSelect(item) {
       console.log(item)
     },
@@ -313,12 +337,11 @@ export default {
     },
     createData() {
       this.indicateForm.results = []
-      // this.indicateForm.results = JSON.stringify(this.explainList)
-      this.indicateForm.results = this.explainList
-      console.log(this.indicateForm)
-      createDataForm(this.indicateForm).then(() => {
+      this.indicateForm.results = JSON.stringify(this.explainList)
+      // this.indicateForm.results = this.explainList
+      this.showValueForm = false // 重置新增位点页面
+      createDataForm(JSON.stringify(this.indicateForm)).then(() => {
         this.dialogVisible = false
-
         this.$notify({
           title: '成功',
           message: '创建成功',
@@ -328,21 +351,14 @@ export default {
       })
     },
     updateData() {
-      console.log(this.indicateForm)
-      const tempData = Object.assign({}, this.indicateForm)
-      console.log(tempData)
-      updateDataForm(tempData).then(() => {
-        for (const v of this.list) {
-          if (v.id === this.indicateForm.id) {
-            const index = this.list.indexOf(v)
-            this.list.splice(index, 1, this.indicateForm)
-            break
-          }
-        }
+      const tempData = Object.assign({}, this.indicateForm) // 从row 中赋值到data
+      tempData.results = JSON.stringify(this.explainList) // 转回去的是results值，需要重新赋值
+      this.showValueForm = false // 重置新增位点页面
+      updateDataForm(JSON.stringify(tempData)).then(() => {
         this.dialogVisible = false
         this.$notify({
           title: '成功',
-          message: '更新成功',
+          message: '创建成功',
           type: 'success',
           duration: 2000
         })

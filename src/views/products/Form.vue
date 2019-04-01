@@ -210,6 +210,7 @@ export default {
     },
     // 编辑更新数据
     async updateData() {
+      console.log(this.treedata)
       this.dialogFormInfo.results = JSON.stringify(this.circleJson(this.treedata))
       const tempData = Object.assign({}, this.dialogFormInfo)
       console.log(tempData)

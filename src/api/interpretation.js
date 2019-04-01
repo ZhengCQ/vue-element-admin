@@ -32,19 +32,19 @@ export function getDisease(secondary_name) {
   })
 }
 
-export function createDataForm(data) {
+export function createDataForm(results) {
   return request({
     url: '/disease/add_disease',
     method: 'post',
-    params: data
+    params: { results }
   })
 }
 
-export function updateDataForm(data) {
+export function updateDataForm(results) {
   return request({
     url: '/disease/edit_disease',
     method: 'post',
-    data
+    params: { results }
   })
 }
 
@@ -53,5 +53,13 @@ export function deleteDisease(id) {
     url: '/disease/delete_disease',
     method: 'get',
     params: id
+  })
+}
+
+export function glistKnowlege(primary_name, knowlege_name) {
+  return request({
+    url: '/product/list_knowlege',
+    method: 'get',
+    params: { primary_name, knowlege_name }
   })
 }
