@@ -77,19 +77,6 @@ export const constantRouterMap = [
         meta: { title: 'dashboard', icon: 'dashboard', noCache: true }
       }
     ]
-  },
-  {
-    path: '/documentation',
-    component: Layout,
-    redirect: '/documentation/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/documentation/index'),
-        name: 'Documentation',
-        meta: { title: 'documentation', icon: 'documentation', noCache: true }
-      }
-    ]
   }
 ]
 
@@ -100,37 +87,6 @@ export default new Router({
 })
 
 export const asyncRouterMap = [
-  {
-    path: '/permission',
-    component: Layout,
-    redirect: '/permission/index',
-    alwaysShow: true, // will always show the root menu
-    meta: {
-      title: 'permission',
-      icon: 'lock',
-      roles: ['admin', 'editor'] // you can set roles in root nav
-    },
-    children: [
-      {
-        path: 'page',
-        component: () => import('@/views/permission/page'),
-        name: 'PagePermission',
-        meta: {
-          title: 'pagePermission',
-          roles: ['admin'] // or you can only set roles in sub nav
-        }
-      },
-      {
-        path: 'directive',
-        component: () => import('@/views/permission/directive'),
-        name: 'DirectivePermission',
-        meta: {
-          title: 'directivePermission'
-          // if do not set roles, means: this page does not require permission
-        }
-      }
-    ]
-  },
   {
     path: '/user',
     component: Layout,
@@ -156,7 +112,37 @@ export const asyncRouterMap = [
     ]
   },
   interpretationRouter,
-  knowledgesRouter
+  knowledgesRouter,
+  {
+    path: '/excel',
+    component: Layout,
+    redirect: '/excel/export-excel',
+    name: 'Excel',
+    meta: {
+      title: 'excel',
+      icon: 'excel'
+    },
+    children: [
+      {
+        path: 'export-excel',
+        component: () => import('@/views/excel/exportExcel'),
+        name: 'ExportExcel',
+        meta: { title: 'exportExcel' }
+      },
+      {
+        path: 'export-selected-excel',
+        component: () => import('@/views/excel/selectExcel'),
+        name: 'SelectExcel',
+        meta: { title: 'selectExcel' }
+      },
+      {
+        path: 'upload-excel',
+        component: () => import('@/views/excel/uploadExcel'),
+        name: 'UploadExcel',
+        meta: { title: 'uploadExcel' }
+      }
+    ]
+  }
   /** When your routing table is too long, you can split it into small modules**/
   // componentsRouter,
   // chartsRouter,

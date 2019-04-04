@@ -63,3 +63,19 @@ export function glistKnowlege(primary_name, knowlege_name) {
     params: { primary_name, knowlege_name }
   })
 }
+
+export function gfindRsName(rsName) {
+  return request({
+    url: '/query/find_rs_name',
+    method: 'get',
+    params: { rsName }
+  })
+}
+
+export function recieveData(upload) {
+  return request({
+    url: '/product/recieve_data',
+    method: 'post',
+    params: { upload }
+  })
+}

@@ -3,6 +3,7 @@
     <!--数据列表上方 开始-->
     <!--新增 开始-->
     <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
+    <upload-excel-component :on-success="handleSuccess" :before-upload="beforeUpload"/>
     <!--新增 结束-->
     <!--数据列表上方 结束-->
     <!--数据列表表单 开始-->
@@ -41,18 +42,19 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.page_size" @pagination="getList" />
     <!--页码 结束-->
     <!--新增编辑表单 开始-->
-    <addEditForm :dialogStatus="dialogStatus" :inEditForm="inEditForm" :dialogFormVisible="dialogVisible" :dialogFormInfo="dialogFormInfo" @cancel="dialogVisible = false;getList()"></addEditForm>
+    <addEditForm :dialogStatus="dialogStatus" :inEditForm="inEditForm" :dialogFormVisible="dialogVisible" :dialogFormInfo="dialogFormInfo" @cancel="resetDialog()"></addEditForm>
     <!--新增编辑表单 结束-->
   </div>
 </template>
 <script>
-import { fetchList, deleteDisease } from '@/api/interpretation'
+import { fetchList, deleteDisease, recieveData } from '@/api/interpretation'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import addEditForm from './Form'
+import UploadExcelComponent from '@/components/UploadExcel/index.vue'
 
 export default {
   name: 'ComplexTable',
-  components: { addEditForm, Pagination },
+  components: { addEditForm, Pagination, UploadExcelComponent },
   data() {
     return {
       tableKey: 0,
@@ -61,14 +63,14 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        page_size: 20,
+        page_size: 10,
         sort: '+id'
       },
       dialogFormInfo: {
         primary_name: '',
         secondary_name: '',
         indicate_name: '',
-        DiseaseKnowledges: ''
+        diseaseKnowledge: ''
       },
       deleted: {
         id: null
@@ -132,21 +134,53 @@ export default {
         primary_name: '',
         secondary_name: '',
         indicate_name: '',
-        DiseaseKnowledges: ''
+        diseaseKnowledge: ''
       }
+    },
+    resetDialog() {
+      this.dialogVisible = false // dialog关闭
+      // this.inEditForm = [] // 可编辑表单数据重置,这一条后续可去除，因为handleUpdate中会重置该结果
+      this.getList()
     },
     handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogVisible = true
-      this.inEditForm = []
     },
     handleUpdate(row) {
       console.log(row)
       this.dialogFormInfo = Object.assign({}, row) // copy obj
       this.inEditForm = JSON.parse(this.dialogFormInfo.front_end_json)
+      console.log(this.inEditForm)
       this.dialogStatus = 'update'
       this.dialogVisible = true
+    },
+    // 上传方法
+    beforeUpload(file) {
+      const isLt1M = file.size / 1024 / 1024 < 1
+
+      if (isLt1M) {
+        return true
+      }
+
+      this.$message({
+        message: 'Please do not upload files larger than 1m in size.',
+        type: 'warning'
+      })
+      return false
+    },
+    handleSuccess({ results, header }) {
+      const upload = { upload: results }
+      console.log(JSON.stringify(upload))
+      recieveData(JSON.stringify(upload)).then(() => {
+        this.$emit('cancel') // 调用父组件的cancer方法
+        this.$notify({
+          title: '成功',
+          message: '创建成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
     }
   }
 }

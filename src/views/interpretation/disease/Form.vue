@@ -19,10 +19,9 @@
     <!--增加按钮-->
     <el-button class="filter-item" style="margin-left: 10px;" type="primary" @click="handleAddSnps">{{ $t('table.addsnps') }}</el-button>
     <!--位点表单-->
-
     <el-form :model="siteForm" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;" v-if="showValueForm">
       <el-form-item :label="$t('table.snp_name')" prop="name">
-        <el-autocomplete class="input" v-model="siteForm.rs_name" :fetch-suggestions="querySearchIndi" placeholder="新增位点" @select="handleSelect"></el-autocomplete>
+        <el-autocomplete class="input" v-model="siteForm.rs_name" :fetch-suggestions="querySearchRs" placeholder="新增位点" @select="handleSelect"></el-autocomplete>
       </el-form-item>
       <el-form-item :label="$t('table.gene')" prop="name">
         <el-input placeholder="请输入内容" v-model="siteForm.gene" clearable> </el-input>
@@ -77,11 +76,13 @@
   <!--新增编辑表单 结束-->
 </template>
 <script type="text/javascript">
-import { getPrimary, getSecondary, getDisease, glistKnowlege, createDataForm, updateDataForm } from '@/api/interpretation'
+import { getPrimary, getSecondary, getDisease, glistKnowlege, gfindRsName, createDataForm, updateDataForm } from '@/api/interpretation'
+import UploadExcelComponent from '@/components/UploadExcel/index.vue'
 import inEditTable from './../inEditTable'
+import transQueryList from '@/utils/utils'
 
 export default {
-  components: { inEditTable },
+  components: { inEditTable, UploadExcelComponent },
   data() {
     return {
       textMap: {
@@ -90,6 +91,7 @@ export default {
       },
       siteForm: {},
       indicateForm: this.dialogFormInfo,
+      // 该columns是可编辑表格的
       columns: [{
         label: '位点rs号',
         key: 'rs_name'
@@ -188,7 +190,7 @@ export default {
     },
     // queryString 为在框中输入的值
     // callback 回调函数,将处理好的数据推回
-    querySearchPri(queryString, callback) {
+    querySearchPribk(queryString, callback) {
       var list = [{}]
       // 从后台获取到对象数组
       getPrimary('name').then((response) => {
@@ -202,58 +204,50 @@ export default {
         console.log(error)
       })
     },
-    querySearchSec(queryString, callback) {
-      var list = [{}]
-      // 从后台获取到对象数组
-      const primary_name = this.indicateForm.primary_name
-      getSecondary(String(primary_name)).then((response) => {
-        // 在这里为这个数组中每一个对象加一个value字段, 因为autocomplete只识别value字段并在下拉列中显示
-        for (const i of response.data.secondary) {
-          i.value = i.name // 将想要展示的数据作为value
-        }
-        list = response.data.secondary
-        console.log(list)
-        callback(list)
-      }).catch((error) => {
-        console.log(error)
-      })
+    // 一级分类
+    async querySearchPri(queryString, callback) {
+      var itemData = await getPrimary('name')
+      itemData = itemData.data.result
+      const list = transQueryList(queryString, itemData)
+      callback(list)
     },
-    querySearchIndi(queryString, callback) {
-      var list = [{}]
-      // 从后台获取到对象数组
-      const secondary_name = this.indicateForm.secondary_name
-      getDisease(String(secondary_name)).then((response) => {
-        // 在这里为这个数组中每一个对象加一个value字段, 因为autocomplete只识别value字段并在下拉列中显示
-        for (const i of response.data.diseases) {
-          i.value = i.indicate_name // 将想要展示的数据作为value
-        }
-        list = response.data.diseases
-        list = queryString ? list.filter(this.createFilter(queryString)) : list
-        callback(list)
-      }).catch((error) => {
-        console.log(error)
-      })
+    // 二级分类
+    async querySearchSec(queryString, callback) {
+      const name = this.indicateForm.primary_name
+      var itemData = await getSecondary(name)
+      itemData = itemData.data.secondary
+      const list = transQueryList(queryString, itemData)
+      callback(list)
     },
-    createFilter(queryString) {
-      return (result) => {
-        return (result.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+    // 指标
+    async querySearchIndi(queryString, callback) {
+      const name = this.indicateForm.secondary_name
+      var itemData = await getDisease(name)
+      itemData = itemData.data.diseases
+      // 统一为name 用来转换为value
+      for (const i of itemData) {
+        i.name = i.indicate_name
       }
+      const list = transQueryList(queryString, itemData)
+      callback(list)
     },
     // 知识库
-    querySearchKlg(queryString, callback) {
-      var list = []
+    async querySearchKlg(queryString, callback) {
       const primary_name = this.indicateForm.primary_name
       const knowledge_name = this.inEditForm.knowledge_name
-      glistKnowlege(primary_name, knowledge_name).then((response) => {
-        console.log(response.data)
-        for (const i of response.data.result) {
-          if (i) {
-            list.push({ value: i })
-          }
-        }
-        list = queryString ? list.filter(this.createFilter(queryString)) : list
-        callback(list)
-      })
+      // 需要一级分类和知识素材名称
+      var itemData = await glistKnowlege(primary_name, knowledge_name)
+      itemData = itemData.data.result
+      const list = transQueryList(queryString, itemData)
+      callback(list)
+    },
+    // rs
+    async querySearchRs(queryString, callback) {
+      const name = this.siteForm.rs_name
+      var itemData = await gfindRsName(name)
+      itemData = itemData.data.rs_name
+      const list = transQueryList(queryString, itemData)
+      callback(list)
     },
     handleSelect(item) {
       console.log(item)
@@ -341,7 +335,7 @@ export default {
       // this.indicateForm.results = this.explainList
       this.showValueForm = false // 重置新增位点页面
       createDataForm(JSON.stringify(this.indicateForm)).then(() => {
-        this.dialogVisible = false
+        this.$emit('cancel') // 调用父组件的cancer方法
         this.$notify({
           title: '成功',
           message: '创建成功',
@@ -353,9 +347,10 @@ export default {
     updateData() {
       const tempData = Object.assign({}, this.indicateForm) // 从row 中赋值到data
       tempData.results = JSON.stringify(this.explainList) // 转回去的是results值，需要重新赋值
+      console.log(JSON.stringify(tempData))
       this.showValueForm = false // 重置新增位点页面
       updateDataForm(JSON.stringify(tempData)).then(() => {
-        this.dialogVisible = false
+        this.$emit('cancel') // 调用父组件的cancer方法
         this.$notify({
           title: '成功',
           message: '创建成功',

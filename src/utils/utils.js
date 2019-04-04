@@ -1,0 +1,29 @@
+
+// 搜索转换列表
+export default function transQueryList(queryString, itemData) {
+  var list = []
+  for (const i of itemData) {
+    // 当类型是对象时的处理情况
+    if (typeof (i) === 'object') {
+    // 在这里为这个数组中每一个对象加一个value字段, 因为autocomplete只识别value字段并在下拉列中显示
+      list.push({ value: i.name })
+    // 当类型是字符时的处理情况
+    } else if (typeof (i) === 'string') {
+      list.push({ value: i })
+    }
+  }
+  console.log(list)
+  list = queryString ? list.filter(createFilter(queryString)) : list
+  return list
+}
+// 过滤
+export function createFilter(queryString) {
+  return (result) => {
+    return (result.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+  }
+}
+
+// 输出数字的固定长度，其余用0补充
+export function prefixInteger(num, length) {
+  return ((Array(length).join('0') + num).slice(-length))
+}
