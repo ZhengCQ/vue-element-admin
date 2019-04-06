@@ -9,7 +9,7 @@ const interpretationRouter = {
   children: [
     {
       path: 'drug',
-      component: () => import('@/views/svg-icons/index'),
+      component: () => import('@/views/interpretation/drug/index'),
       name: 'DrugIndi',
       meta: { title: 'drugs', icon: 'yaowu', noCache: false }
     },
@@ -20,10 +20,10 @@ const interpretationRouter = {
       meta: { title: 'disease', icon: 'jibing', noCache: false }
     },
     {
-      path: 'character',
-      component: () => import('@/views/svg-icons/index'),
+      path: 'personal',
+      component: () => import('@/views/interpretation/personal/index'),
       name: 'CharacterIndi',
-      meta: { title: 'character', icon: 'tezheng', noCache: false }
+      meta: { title: 'personal', icon: 'tezheng', noCache: false }
     },
     {
       path: 'mendelian',

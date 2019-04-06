@@ -9,7 +9,7 @@ export default {
     knowledges: '知识库管理',
     drugs: '药物',
     disease: '常见疾病',
-    character: '个性特征',
+    personal: '个性特征',
     mendelian: '单基因遗传病',
     guide: '引导页',
     permission: '权限测试页',

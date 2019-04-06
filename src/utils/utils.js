@@ -12,11 +12,10 @@ export default function transQueryList(queryString, itemData) {
       list.push({ value: i })
     }
   }
-  console.log(list)
   list = queryString ? list.filter(createFilter(queryString)) : list
   return list
 }
-// 过滤
+// 得到的数据列表再根据字符匹配筛选一次
 export function createFilter(queryString) {
   return (result) => {
     return (result.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
