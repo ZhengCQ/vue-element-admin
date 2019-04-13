@@ -1,188 +1,240 @@
 <template>
-  <div class="app-container">
-    <!--数据列表上方 开始-->
-    <!--新增 开始-->
-    <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
-    <upload-excel-component :on-success="handleSuccess" :before-upload="beforeUpload"/>
-    <!--新增 结束-->
-    <!--数据列表上方 结束-->
-    <!--数据列表表单 开始-->
-    <el-table v-loading="listLoading" :key="tableKey" :data="tableList" border fit highlight-current-row style="width: 100%;" @sort-change="sortChange">
-      <el-table-column type="index" label="No." width="70px" align="center" />
-      <el-table-column :label="$t('table.disease_code')" prop="product_class" align="center" width="160px" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.disease_code }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.indicate_name')" prop="indicate_name" align="center" width="160px" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.indicate_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.primary_name')" prop="primary_name" align="center" width="160px" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.primary_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.secondary_name')" prop="secondary_name" align="center" width="160px" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.secondary_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="320px" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('table.edit') }}</el-button>
-          <el-button v-if="scope.row.status!='deleted'" size="mini" type="danger" @click="handleDelete(scope.row)">{{ $t('table.delete') }}
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!--数据列表表单 结束-->
-    <!--页码 开始-->
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.page_size" @pagination="getList" />
-    <!--页码 结束-->
-    <!--新增编辑表单 开始-->
-    <addEditForm :dialogStatus="dialogStatus" :inEditForm="inEditForm" :dialogFormVisible="dialogVisible" :dialogFormInfo="dialogFormInfo" @cancel="resetDialog()"></addEditForm>
-    <!--新增编辑表单 结束-->
-  </div>
+  <maincontent
+               :fetchList="glistdisease"
+               :deleteRecord="gdeleteDisease"
+               :getPrimary="gallPrimary"
+               :getSecondary="gallSecondary"
+               :getDisease="gallDisease"
+               :glistKnowlege="glistKnowlege"
+               :createDataForm="paddDisease"
+               :updateDataForm="peditDisease"
+               :inEditColumns="inEditColumns"
+               :subConfig="subElConfig"
+               :formData="formData"
+               :siteFormInfo="siteFormInfo"
+               :siteConfig="siteConfig"
+               />
 </template>
 <script>
-import { fetchList, deleteDisease, recieveData } from '@/api/interpretation'
-import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
-import addEditForm from './Form'
-import UploadExcelComponent from '@/components/UploadExcel/index.vue'
-
+import { glistdisease, gdeleteDisease, gallPrimary, gallSecondary, gallDisease, glistKnowlege, paddDisease, peditDisease } from '@/api/interpretation/disease'
+import maincontent from '../Main'
 export default {
-  name: 'ComplexTable',
-  components: { addEditForm, Pagination, UploadExcelComponent },
-  data() {
-    return {
-      tableKey: 0,
-      tableList: null,
-      total: 0,
-      listLoading: true,
-      listQuery: {
-        page: 1,
-        page_size: 10,
-        sort: '+id'
-      },
-      dialogFormInfo: {
-        primary_name: '',
-        secondary_name: '',
-        indicate_name: '',
-        diseaseKnowledge: ''
-      },
-      deleted: {
-        id: null
-      },
-      dialogVisible: false,
-      dialogStatus: '',
-      inEditForm: []
-    }
-  },
-  created() {
-    this.getList()
+  components: {
+    maincontent
   },
   methods: {
-    getList() {
-      this.listLoading = true
-      fetchList(this.listQuery).then(response => {
-        this.tableList = response.data.results
-        for (const i of this.tableList) {
-          i.disease_code = (Array(4).join('0') + i.disease_code).slice(-4) // 得到特定长度
-          // i.disease_code = i.primary_code + i.disease_code // 更替disase_code
-        }
-        this.total = response.data.total
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
-      })
-    },
-    async handleDelete(row) {
-      if (confirm('确定要删除吗？')) {
-        this.deleted.disease_code = row.disease_code
-        const info = await deleteDisease(this.deleted)
-        if (info.status === 200) {
-          this.$message('指标项:' + ';删除' + '成功')
-        }
-        console.log(info)
-        this.getList(1)
+    glistdisease,
+    gdeleteDisease,
+    gallPrimary,
+    gallSecondary,
+    gallDisease,
+    glistKnowlege,
+    paddDisease,
+    peditDisease
+  },
+  data() {
+    return {
+      inEditColumns: [{
+        label: '位点rs号',
+        key: 'rs_name'
+      },
+      {
+        label: 'Gene',
+        key: 'gene'
+      },
+      {
+        label: 'EffectAllele',
+        key: 'effect_allele'
+      },
+      {
+        label: '次要allele',
+        key: 'other_allele'
+      },
+      {
+        label: 'OR值',
+        key: 'jb_or'
+      },
+      {
+        label: 'Beta',
+        key: 'beta'
+      },
+      {
+        label: 'CI值',
+        key: 'CI'
+      },
+      {
+        label: 'Pvalue',
+        key: 'p_value'
+      },
+      {
+        label: 'HomRef频率',
+        key: 'homeRefFrequency'
+      },
+      {
+        label: 'Het频率',
+        key: 'hetFrequency'
+      },
+      {
+        label: 'HomAlt频率',
+        key: 'homAltFrequency'
+      },
+      {
+        label: '文献',
+        key: 'reference',
+        width: '460px'
+      },
+      {
+        label: '操作',
+        key: 'operation'
       }
-    },
-    sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'id') {
-        this.sortByID(order)
-      }
-    },
-    handleFilter() {
-      this.listQuery.page = 1
-      this.getList()
-    },
-    sortByID(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+id'
-      } else {
-        this.listQuery.sort = '-id'
-      }
-      this.handleFilter()
-    },
-
-    resetTemp() {
-      this.dialogFormInfo = {
-        primary_name: '',
+      ],
+      // 主表单需要收集的form数据
+      formData: {
+        primary_name: '常见疾病',
         secondary_name: '',
         indicate_name: '',
-        diseaseKnowledge: ''
+        knowledge_name: ''
+      },
+      // 主表单动态表单的配置文件
+      subElConfig: {
+        fieldsConfig: [
+          {
+            name: 'primary_name',
+            label: '一级分类',
+            fieldType: 'autoComplete',
+            cols: 16,
+            querySearch: 'getPrimary'
+          },
+          {
+            name: 'secondary_name',
+            label: '二级分类',
+            placeholder: '请输入二级分类',
+            fieldType: 'autoComplete',
+            cols: 16,
+            querySearch: 'getSecondary'
+          },
+          {
+            name: 'indicate_name',
+            label: '指标名称',
+            fieldType: 'autoComplete',
+            cols: 16,
+            querySearch: 'querySearchIndi',
+            trigerFocus: false
+          },
+          {
+            name: 'knowledge_name',
+            label: '素材选择',
+            fieldType: 'autoComplete',
+            cols: 16,
+            querySearch: 'getKnowledge'
+          },
+          {
+            name: 'knowledge_name',
+            label: '素材选择',
+            fieldType: 'autoComplete',
+            cols: 16,
+            querySearch: 'getKnowledge'
+          }
+        ]
+      },
+      siteFormInfo: {
+        rs_name: '',
+        gene: '',
+        effect_allele: '',
+        other_allele: '',
+        jb_or: '',
+        beta: '',
+        homeRefFrequency: '',
+        hetFrequency: '',
+        homAltFrequency: '',
+        CI: '',
+        p_value: ''
+      },
+      siteConfig: {
+        fieldsConfig: [
+          {
+            name: 'rs_name',
+            label: '位点编号',
+            fieldType: 'autoComplete',
+            cols: 12,
+            placeholder: '请选择或输入rs号',
+            querySearch: 'gfindRsName'
+          },
+          {
+            name: 'gene',
+            label: '基因名称',
+            fieldType: 'TextInput',
+            cols: 12
+          },
+          {
+            name: 'effect_allele',
+            label: '主效碱基',
+            fieldType: 'SelectList',
+            options: [
+              { label: 'A', value: 'A' },
+              { label: 'T', value: 'T' },
+              { label: 'C', value: 'C' },
+              { label: 'G', value: 'G' }
+            ],
+            cols: 12
+          },
+          {
+            name: 'other_allele',
+            label: '次要碱基',
+            fieldType: 'SelectList',
+            options: [
+              { label: 'A', value: 'A' },
+              { label: 'T', value: 'T' },
+              { label: 'C', value: 'C' },
+              { label: 'G', value: 'G' }
+            ],
+            cols: 12
+          },
+          {
+            name: 'jb_or',
+            label: 'OR值',
+            fieldType: 'TextInput',
+            cols: 8
+          },
+          {
+            name: 'beta',
+            label: 'Beta值',
+            fieldType: 'TextInput',
+            cols: 8
+          },
+          {
+            name: 'CI',
+            label: 'CI值',
+            fieldType: 'TextInput',
+            cols: 8
+          },
+          {
+            name: 'p_value',
+            label: 'p_value',
+            fieldType: 'TextInput',
+            cols: 8
+          },
+          {
+            name: 'homeRefFrequency',
+            label: 'homRef频率',
+            fieldType: 'TextInput',
+            cols: 8
+          },
+          {
+            name: 'hetFrequency',
+            label: 'het频率',
+            fieldType: 'TextInput',
+            cols: 8
+          },
+          {
+            name: 'homAltFrequency',
+            label: 'homAlt频率',
+            fieldType: 'TextInput',
+            cols: 8
+          }
+        ]
       }
-    },
-    resetDialog() {
-      this.dialogVisible = false // dialog关闭
-      // this.inEditForm = [] // 可编辑表单数据重置,这一条后续可去除，因为handleUpdate中会重置该结果
-      this.getList()
-    },
-    handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogVisible = true
-    },
-    handleUpdate(row) {
-      console.log(row)
-      this.dialogFormInfo = Object.assign({}, row) // copy obj
-      this.inEditForm = JSON.parse(this.dialogFormInfo.front_end_json)
-      console.log(this.inEditForm)
-      this.dialogStatus = 'update'
-      this.dialogVisible = true
-    },
-    // 上传方法
-    beforeUpload(file) {
-      const isLt1M = file.size / 1024 / 1024 < 1
-
-      if (isLt1M) {
-        return true
-      }
-
-      this.$message({
-        message: 'Please do not upload files larger than 1m in size.',
-        type: 'warning'
-      })
-      return false
-    },
-    handleSuccess({ results, header }) {
-      const upload = { upload: results }
-      console.log(JSON.stringify(upload))
-      recieveData(JSON.stringify(upload)).then(() => {
-        this.$emit('cancel') // 调用父组件的cancer方法
-        this.$notify({
-          title: '成功',
-          message: '创建成功',
-          type: 'success',
-          duration: 2000
-        })
-      })
     }
   }
 }
-
 </script>
