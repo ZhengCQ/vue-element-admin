@@ -1,0 +1,66 @@
+<template>
+  <el-form :model="siteForm2" :inline="true" :rules="rules" label-position="left"  style="width: 600px; margin-left:50px;" v-if="showValueForm">
+    <el-row>
+    <form-generator
+                   :config="config"
+                   v-model="siteForm"/>
+    </el-row>
+    <!--参考文献 开始-->
+    <el-form-item :label="$t('table.reference')" prop="reference">
+      <el-input placeholder="请输入参考文献" type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="siteForm.reference" clearable> </el-input>
+    </el-form-item>
+    <!--参考文献 结束-->
+    <slot></slot>
+  </el-form>
+</template>
+<script type="text/javascript">
+import { gfindRsName } from '@/api/interpretation'
+import transQueryList from '@/utils/utils'
+import FormGenerator from '@/components/Form/FormGenerator'
+
+export default {
+  name: 'SiteForm',
+  components: { FormGenerator },
+  inject: ['InterpMainApp'], // 从Main.vue中获取数据
+  data() {
+    return {
+      config: this.InterpMainApp.siteConfig,
+      siteForm2: this.siteForm,
+      rules: this.InterpMainApp.rules
+    }
+  },
+  props: {
+    showValueForm: {
+      type: Boolean
+    },
+    siteForm: {
+      type: Object
+    }
+  },
+  watch: {
+    siteForm(val) {
+      this.siteForm2 = val
+    }
+  },
+  created() {
+    this.querySearchType()
+  },
+  methods: {
+    // 位点搜寻
+    async querySearchRs(queryString, callback) {
+      const name = this.siteForm2.rs_name
+      var itemData = await gfindRsName(name)
+      itemData = itemData.data.rs_name
+      const list = transQueryList(queryString, itemData)
+      callback(list)
+    },
+    querySearchType() { // 函数一时没有找到方法直接转递，采用字符传递方式，再用方法替代。
+      this.config.fieldsConfig.forEach((item, index) => {
+        if (item.querySearch === 'gfindRsName') {
+          item.querySearch = this.querySearchRs
+        }
+      })
+    }
+  }
+}
+</script>
