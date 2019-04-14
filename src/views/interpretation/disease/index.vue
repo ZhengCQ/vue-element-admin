@@ -4,7 +4,7 @@
                :deleteRecord="gdeleteDisease"
                :getPrimary="gallPrimary"
                :getSecondary="gallSecondary"
-               :getDisease="gallDisease"
+               :getIndicate="gallDisease"
                :glistKnowlege="glistKnowlege"
                :createDataForm="paddDisease"
                :updateDataForm="peditDisease"
@@ -13,6 +13,7 @@
                :formData="formData"
                :siteFormInfo="siteFormInfo"
                :siteConfig="siteConfig"
+               :rules="rules"
                />
 </template>
 <script>
@@ -34,6 +35,7 @@ export default {
   },
   data() {
     return {
+      // 可编辑表格的动态配置
       inEditColumns: [{
         label: '位点rs号',
         key: 'rs_name'
@@ -108,6 +110,7 @@ export default {
           {
             name: 'secondary_name',
             label: '二级分类',
+            prop: 'name',
             placeholder: '请输入二级分类',
             fieldType: 'autoComplete',
             cols: 16,
@@ -116,17 +119,11 @@ export default {
           {
             name: 'indicate_name',
             label: '指标名称',
+            prop: 'name',
             fieldType: 'autoComplete',
             cols: 16,
             querySearch: 'querySearchIndi',
             trigerFocus: false
-          },
-          {
-            name: 'knowledge_name',
-            label: '素材选择',
-            fieldType: 'autoComplete',
-            cols: 16,
-            querySearch: 'getKnowledge'
           },
           {
             name: 'knowledge_name',
@@ -163,6 +160,7 @@ export default {
           {
             name: 'gene',
             label: '基因名称',
+            prop: 'name',
             fieldType: 'TextInput',
             cols: 12
           },
@@ -233,6 +231,9 @@ export default {
             cols: 8
           }
         ]
+      },
+      rules: {
+        name: [{ message: '请输入名称', required: 'true' }]
       }
     }
   }

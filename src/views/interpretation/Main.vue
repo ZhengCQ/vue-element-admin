@@ -71,7 +71,7 @@ export default {
       type: Function,
       default: null
     },
-    getDisease: {
+    getIndicate: {
       type: Function,
       default: null
     },
@@ -100,6 +100,9 @@ export default {
       type: Object
     },
     siteConfig: {
+      type: Object
+    },
+    rules: {
       type: Object
     }
   },
@@ -141,6 +144,7 @@ export default {
       this.listLoading = true
       this.fetchList(this.listQuery).then(response => {
         this.tableList = response.data.results
+        console.log(this.tableList)
         for (const i of this.tableList) {
           i.disease_code = (Array(4).join('0') + i.disease_code).slice(-4) // 得到特定长度
           // i.disease_code = i.primary_code + i.disease_code // 更替disase_code
