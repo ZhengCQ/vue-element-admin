@@ -1,5 +1,5 @@
 <template>
-  <el-form-item :label="label">
+  <el-form-item :label="label" :prop="prop">
     <el-select v-model="currentValue" @input="onInputEvent">
       <el-option
         v-for="item in options"
@@ -15,7 +15,7 @@
 import formMixins from '@/mixins/form-model'
 export default {
   name: 'SelectList',
-  props: ['multi', 'options', 'name', 'label', 'value'],
+  props: ['multi', 'options', 'name', 'prop', 'label', 'value'],
   mixins: [formMixins],
   data() {
     return {

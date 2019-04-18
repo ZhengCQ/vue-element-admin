@@ -69,7 +69,7 @@ export default {
       const knowledge_name = this.indicateForm.knowledge_name
       // 需要一级分类和知识素材名称
       var itemData = await this.InterpMainApp.glistKnowlege(primary_name, knowledge_name)
-      itemData = itemData.data.result
+      itemData = itemData.data.results
       const list = transQueryList(queryString, itemData)
       callback(list)
     },

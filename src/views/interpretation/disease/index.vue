@@ -8,12 +8,15 @@
                :glistKnowlege="glistKnowlege"
                :createDataForm="paddDisease"
                :updateDataForm="peditDisease"
-               :inEditColumns="inEditColumns"
+               :siteEditColumns="siteEditColumns"
+               :conclustionColumns="conclustionColumns"
                :subConfig="subElConfig"
                :formData="formData"
                :siteFormInfo="siteFormInfo"
                :siteConfig="siteConfig"
                :rules="rules"
+               :conclusionFormInfo="conclusionFormInfo"
+               :conclusionConfig="conclusionConfig"
                />
 </template>
 <script>
@@ -36,7 +39,7 @@ export default {
   data() {
     return {
       // 可编辑表格的动态配置
-      inEditColumns: [{
+      siteEditColumns: [{
         label: '位点rs号',
         key: 'rs_name'
       },
@@ -84,10 +87,6 @@ export default {
         label: '文献',
         key: 'reference',
         width: '460px'
-      },
-      {
-        label: '操作',
-        key: 'operation'
       }
       ],
       // 主表单需要收集的form数据
@@ -110,7 +109,7 @@ export default {
           {
             name: 'secondary_name',
             label: '二级分类',
-            prop: 'name',
+            prop: 'secondary_name',
             placeholder: '请输入二级分类',
             fieldType: 'autoComplete',
             cols: 16,
@@ -119,7 +118,7 @@ export default {
           {
             name: 'indicate_name',
             label: '指标名称',
-            prop: 'name',
+            prop: 'indicate_name',
             fieldType: 'autoComplete',
             cols: 16,
             querySearch: 'querySearchIndi',
@@ -134,6 +133,48 @@ export default {
           }
         ]
       },
+      conclustionColumns: [{
+        label: '结论',
+        key: 'conclusion'
+      },
+      {
+        label: '评估指标',
+        key: 'assesement'
+      },
+      {
+        label: '解读详情',
+        key: 'detail',
+        width: '250px'
+      },
+      {
+        label: '建议对策',
+        key: 'suggtion',
+        width: '300px'
+      }],
+      // 结论表单数据初始化
+      conclusionFormInfo: {
+        primary_name: ''
+      },
+      // 结论表单动态生成配置文件
+      conclusionConfig: {
+        fieldsConfig: [
+          {
+            name: 'conclusion',
+            label: '结论',
+            placeholder: '风险等级',
+            fieldType: 'TextInput',
+            cols: 10
+          },
+          {
+            name: 'assesement',
+            label: '评估指标',
+            placeholder: '结论对应的OR范围区间',
+            fieldType: 'TextInput',
+            cols: 12
+          }
+        ]
+      },
+      // 位点表单数据初始化
       siteFormInfo: {
         rs_name: '',
         gene: '',
@@ -145,28 +186,33 @@ export default {
         hetFrequency: '',
         homAltFrequency: '',
         CI: '',
-        p_value: ''
+        p_value: '',
+        reference: ''
       },
+      // 位点表单动态配置
       siteConfig: {
         fieldsConfig: [
           {
             name: 'rs_name',
             label: '位点编号',
-            fieldType: 'autoComplete',
-            cols: 12,
-            placeholder: '请选择或输入rs号',
-            querySearch: 'gfindRsName'
+            prop: 'rs_name',
+            fieldType: 'autoComplete', // 表单类型
+            cols: 12, // 占据的空间
+            placeholder: '请选择或输入rs号', // 表格里面显示提示什么
+            querySearch: 'gfindRsName' // 这个是函数的识别字符，根据这个字符再选择函数
           },
           {
             name: 'gene',
             label: '基因名称',
-            prop: 'name',
+            placeholder: '官方Symbol',
             fieldType: 'TextInput',
             cols: 12
           },
           {
             name: 'effect_allele',
+            prop: 'effect_allele',
             label: '主效碱基',
+            placeholder: '请选择碱基',
             fieldType: 'SelectList',
             options: [
               { label: 'A', value: 'A' },
@@ -179,6 +225,8 @@ export default {
           {
             name: 'other_allele',
             label: '次要碱基',
+            prop: 'other_allele',
+            placeholder: '请选择碱基',
             fieldType: 'SelectList',
             options: [
               { label: 'A', value: 'A' },
@@ -191,49 +239,81 @@ export default {
           {
             name: 'jb_or',
             label: 'OR值',
-            fieldType: 'TextInput',
+            placeholder: '整数或小数',
+            prop: 'jb_or',
+            fieldType: 'NumInput',
             cols: 8
           },
           {
             name: 'beta',
             label: 'Beta值',
-            fieldType: 'TextInput',
+            placeholder: '整数或小数',
+            fieldType: 'NumInput',
             cols: 8
           },
           {
             name: 'CI',
             label: 'CI值',
-            fieldType: 'TextInput',
+            placeholder: '整数或小数',
+            fieldType: 'NumInput',
             cols: 8
           },
           {
             name: 'p_value',
             label: 'p_value',
-            fieldType: 'TextInput',
+            placeholder: '小数0~1',
+            fieldType: 'NumInput',
             cols: 8
           },
           {
             name: 'homeRefFrequency',
             label: 'homRef频率',
-            fieldType: 'TextInput',
+            prop: 'homeRefFrequency',
+            placeholder: '小数0~1',
+            fieldType: 'NumInput',
             cols: 8
           },
           {
             name: 'hetFrequency',
             label: 'het频率',
-            fieldType: 'TextInput',
+            prop: 'hetFrequency',
+            placeholder: '小数0~1',
+            fieldType: 'NumInput',
             cols: 8
           },
           {
             name: 'homAltFrequency',
             label: 'homAlt频率',
-            fieldType: 'TextInput',
+            placeholder: '小数0~1',
+            prop: 'homAltFrequency',
+            fieldType: 'NumInput',
             cols: 8
           }
         ]
       },
+      // 表单验证规则
       rules: {
-        name: [{ message: '请输入名称', required: 'true' }]
+        primary_name: [{ message: '必填项', required: 'true' }],
+        indicate_name: [{ message: '必填项', required: 'true' }],
+        secondary_name: [{ message: '必填项', required: 'true' }],
+        rs_name: [
+          { message: '必填项', required: 'true' },
+          { pattern: /^rs\d{1,10}$/, message: 'rs +  1 到 10 个数字', trigger: 'blur' }
+        ],
+        effect_allele: [{ message: '请选择一个碱基', required: 'true', trigger: 'blur' }],
+        other_allele: [{ message: '请选择一个碱基', required: 'true', trigger: 'blur' }],
+        homeRefFrequency: [
+          { message: '值为小数，范围0~1', required: 'true', type: 'number', trigger: 'blur' },
+          { pattern: /0 | ^0\.\d{1,10}$/, message: '请输入0-1之间的小数', trigger: 'blur' }
+        ],
+        hetFrequency: [
+          { message: '值为小数，范围0~1', required: 'true', type: 'number', trigger: 'blur' },
+          { pattern: /0 | ^0\.\d{1,10}$/, message: '请输入0-1之间的小数', trigger: 'blur' }
+        ],
+        homAltFrequency: [
+          { message: '值为小数，范围0~1', required: 'true', type: 'number', trigger: 'blur' },
+          { pattern: /0 | ^0\.\d{1,10}$/, message: '请输入0-1之间的小数', trigger: 'blur' }
+        ]
       }
     }
   }

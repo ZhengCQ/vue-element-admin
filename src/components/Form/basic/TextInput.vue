@@ -3,7 +3,7 @@
     <el-input
              type="text"
              :name="name"
-             :value="currentValue"
+             v-model="currentValue"
              @input="onInputEvent"
              :placeholder="placeholder">
     </el-input>
@@ -21,7 +21,6 @@ export default {
     }
   }
 }
-
 </script>
 <style scoped>
 </style>

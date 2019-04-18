@@ -31,3 +31,28 @@ export function gallDrug(secondary_name) {
     params: { secondary_name }
   })
 }
+
+export function glistKnowlege(primary_name, knowlege_name) {
+  return request({
+    url: '/drug/list_knowlege',
+    method: 'get',
+    params: { primary_name, knowlege_name }
+  })
+}
+
+export function paddDrug(results) {
+  return request({
+    url: '/drug/add_drug',
+    method: 'post',
+    params: { results }
+  })
+}
+
+export function peditDrug(results) {
+  return request({
+    url: '/drug/edit_drug',
+    method: 'post',
+    params: { results }
+  })
+}
+

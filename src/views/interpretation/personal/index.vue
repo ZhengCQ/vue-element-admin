@@ -5,6 +5,8 @@
                :getPrimary="gallPrimary"
                :getSecondary="gallSecondary"
                :getIndicate="gallPersonality"
+               :createDataForm="paddPersonInterpretation"
+               :updateDataForm="peditPersonInterpretation"
                :inEditColumns="inEditColumns"
                :subConfig="subElConfig"
                :formData="formData"
@@ -14,7 +16,10 @@
 </template>
 <script>
 // 缺少新增、编辑表单及罗列知识库
-import { glistAllPsersonal, gdeleteIndicate, gallPrimary, gallSecondary, gallPersonality } from '@/api/interpretation/personal'
+// /personal/add_person_interpretation
+// /personal/edit_person_interpretation
+// /personal/indicate_2_knowlege
+import { glistAllPsersonal, gdeleteIndicate, gallPrimary, gallSecondary, gallPersonality, paddPersonInterpretation, peditPersonInterpretation } from '@/api/interpretation/personal'
 import maincontent from '../Main'
 export default {
   components: {
@@ -25,7 +30,9 @@ export default {
     gdeleteIndicate,
     gallPrimary,
     gallSecondary,
-    gallPersonality
+    gallPersonality,
+    paddPersonInterpretation,
+    peditPersonInterpretation
   },
   data() {
     return {
@@ -118,7 +125,8 @@ export default {
         allele2: '',
         effect: '',
         mark: '',
-        Freq: ''
+        Freq: '',
+        edit: false
       },
       siteConfig: {
         fieldsConfig: [

@@ -42,7 +42,7 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.page_size" @pagination="getList" />
     <!--页码 结束-->
     <!--新增编辑表单 开始-->
-    <addEditForm ref="addEditForm" :dialogStatus="dialogStatus" :siteFormInfo="siteFormInfo" :dialogFormInfo="dialogFormInfo" :inEditForm="inEditForm" :dialogFormVisible="dialogVisible"  @cancel="resetDialog()"></addEditForm>
+    <addEditForm ref="addEditForm" :dialogStatus="dialogStatus" :siteFormInfo="siteFormInfo" :dialogFormInfo="dialogFormInfo" :inEditForm="inEditForm" :conclusionDiaForm="dialogFormInfo" :dialogFormVisible="dialogVisible"  @cancel="resetDialog()"></addEditForm>
     <!--新增编辑表单 结束-->
   </div>
 </template>
@@ -87,7 +87,10 @@ export default {
       type: Function,
       default: null
     },
-    inEditColumns: {
+    siteEditColumns: {
+      type: Array
+    },
+    conclustionColumns: {
       type: Array
     },
     subConfig: {
@@ -100,6 +103,12 @@ export default {
       type: Object
     },
     siteConfig: {
+      type: Object
+    },
+    conclusionFormInfo: {
+      type: Object
+    },
+    conclusionConfig: {
       type: Object
     },
     rules: {
@@ -197,7 +206,6 @@ export default {
     },
     handleUpdate(row) {
       this.dialogFormInfo = Object.assign({}, row) // copy obj
-      console.log(this.dialogFormInfo)
       this.inEditForm = JSON.parse(this.dialogFormInfo.front_end_json)
       this.dialogStatus = 'update'
       this.dialogVisible = true

@@ -1,17 +1,22 @@
 <template>
-  <el-form :model="siteForm2" :inline="true" :rules="rules" label-position="left"  style="width: 600px; margin-left:50px;" v-if="showValueForm">
+  <div>
+  <el-form :inline="true" :model="siteForm2" :rules="rules" label-position="left"  style="width: 600px; margin-left:50px;" v-if="showValueForm">
     <el-row>
     <form-generator
                    :config="config"
-                   v-model="siteForm"/>
+                   v-model="siteForm"
+                   :rules="rules"/>
     </el-row>
+   </el-form>
     <!--参考文献 开始-->
+    <el-form :model="siteForm2" :rules="rules" label-position="left"  style="width: 600px; margin-left:50px;" v-if="showValueForm">
     <el-form-item :label="$t('table.reference')" prop="reference">
       <el-input placeholder="请输入参考文献" type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="siteForm.reference" clearable> </el-input>
     </el-form-item>
     <!--参考文献 结束-->
     <slot></slot>
   </el-form>
+</div>
 </template>
 <script type="text/javascript">
 import { gfindRsName } from '@/api/interpretation'

@@ -4,6 +4,9 @@
                :getPrimary="gallPrimary"
                :getSecondary="gallSecondary"
                :getIndicate="gallDrug"
+               :glistKnowlege="glistKnowlege"
+               :createDataForm="paddDrug"
+               :updateDataForm="peditDrug"
                :inEditColumns="inEditColumns"
                :subConfig="subElConfig"
                :formData="formData"
@@ -12,7 +15,10 @@
                />
 </template>
 <script>
-import { glistDrug, gallPrimary, gallSecondary, gallDrug } from '@/api/interpretation/drug'
+// 新增 /drug/add_drug
+// 编辑 /drug/edit_drug
+// 罗列知识库 /drug/list_knowlege
+import { glistDrug, gallPrimary, gallSecondary, gallDrug, glistKnowlege, paddDrug, peditDrug } from '@/api/interpretation/drug'
 import maincontent from '../Main'
 export default {
   components: {
@@ -22,13 +28,17 @@ export default {
     glistDrug,
     gallPrimary,
     gallSecondary,
-    gallDrug
+    gallDrug,
+    glistKnowlege,
+    paddDrug,
+    peditDrug
   },
   data() {
     return {
       inEditColumns: [{
         label: '位点rs号',
-        key: 'rs_name'
+        key: 'rs_name',
+        width: '100px'
       },
       {
         label: 'Gene',
@@ -48,7 +58,8 @@ export default {
       },
       {
         label: 'medication_advice',
-        key: 'medication_advice'
+        key: 'medication_advice',
+        width: '200px'
       },
       {
         label: 'interpretation_label',
@@ -111,11 +122,11 @@ export default {
       siteFormInfo: {
         rs_name: '',
         gene: '',
-        allele1: '',
-        allele2: '',
-        effect: '',
-        mark: '',
-        Freq: ''
+        phenotype: '',
+        priority: '',
+        medication_tips: '',
+        interpretation_label: '',
+        medication_advice: ''
       },
       siteConfig: {
         fieldsConfig: [

@@ -22,12 +22,13 @@
 <script>
 import autoComplete from './basic/autoComplete'
 import TextInput from './basic/TextInput'
+import NumInput from './basic/NumInput'
 import SelectList from './basic/SelectList'
 import multiTextInput from './basic/multiTextInput'
 export default {
   name: 'FormGenerator',
-  components: { autoComplete, TextInput, SelectList, multiTextInput },
-  props: ['config', 'value', 'rules'],
+  components: { autoComplete, TextInput, SelectList, multiTextInput, NumInput },
+  props: ['config', 'value'],
   data() {
     return {
       formData: this.value
@@ -36,7 +37,6 @@ export default {
   watch: {
     value(val) {
       this.formData = val
-      console.log(this.formData['indicate_name'])
     }
   },
   methods: {

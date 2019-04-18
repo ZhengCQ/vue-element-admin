@@ -1,11 +1,10 @@
 <template>
-  <el-form-item :label="label" :prop="prop" >
+  <el-form-item :label="label" :prop="prop">
     <el-input
-             type="textarea"
+             type="number"
              :name="name"
-             v-model="currentValue"
+             v-model.number="currentValue"
              @input="onInputEvent"
-             :autosize="autosize"
              :placeholder="placeholder">
     </el-input>
   </el-form-item>
@@ -13,8 +12,8 @@
 <script>
 import formMixins from '@/mixins/form-model'
 export default {
-  name: 'TextInput',
-  props: ['placeholder', 'label', 'prop', 'name', 'value', 'autosize'],
+  name: 'NumInput',
+  props: ['placeholder', 'label', 'prop', 'name', 'value'],
   mixins: [formMixins],
   data() {
     return {
@@ -22,7 +21,6 @@ export default {
     }
   }
 }
-
 </script>
 <style scoped>
 </style>

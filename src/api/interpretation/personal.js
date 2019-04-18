@@ -39,3 +39,27 @@ export function gallPersonality(secondary_name) {
     params: { secondary_name }
   })
 }
+
+export function glistKnowlege(primary_name, knowlege_name) {
+  return request({
+    url: '/drug/list_knowlege',
+    method: 'get',
+    params: { primary_name, knowlege_name }
+  })
+}
+
+export function paddPersonInterpretation(results) {
+  return request({
+    url: '/personal/add_person_interpretation',
+    method: 'post',
+    params: { results }
+  })
+}
+
+export function peditPersonInterpretation(results) {
+  return request({
+    url: '/personal/edit_person_interpretation',
+    method: 'post',
+    params: { results }
+  })
+}
