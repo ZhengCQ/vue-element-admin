@@ -17,23 +17,12 @@ export default {
   data() {
     return {
       config: this.InterpMainApp.subConfig,
-      indicateForm: this.dialogFormInfo,
+      indicateForm: this.InterpMainApp.subFormInfo,
       rules: this.InterpMainApp.rules
     }
   },
   created() {
     this.querySearchType()
-  },
-  props: {
-    dialogFormInfo: {
-      type: Object
-    }
-  },
-  watch: {
-    dialogFormInfo(val) {
-      console.log(val)
-      this.indicateForm = val
-    }
   },
   methods: {
     // 一级分类
@@ -69,7 +58,7 @@ export default {
       const knowledge_name = this.indicateForm.knowledge_name
       // 需要一级分类和知识素材名称
       var itemData = await this.InterpMainApp.glistKnowlege(primary_name, knowledge_name)
-      itemData = itemData.data.results
+      itemData = itemData.data.result
       const list = transQueryList(queryString, itemData)
       callback(list)
     },

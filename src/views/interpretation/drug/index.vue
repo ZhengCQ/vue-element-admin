@@ -7,7 +7,7 @@
                :glistKnowlege="glistKnowlege"
                :createDataForm="paddDrug"
                :updateDataForm="peditDrug"
-               :inEditColumns="inEditColumns"
+               :siteEditColumns="siteEditColumns"
                :subConfig="subElConfig"
                :formData="formData"
                :siteFormInfo="siteFormInfo"
@@ -35,7 +35,7 @@ export default {
   },
   data() {
     return {
-      inEditColumns: [{
+      siteEditColumns: [{
         label: '位点rs号',
         key: 'rs_name',
         width: '100px'

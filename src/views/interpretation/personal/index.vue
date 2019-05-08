@@ -7,7 +7,7 @@
                :getIndicate="gallPersonality"
                :createDataForm="paddPersonInterpretation"
                :updateDataForm="peditPersonInterpretation"
-               :inEditColumns="inEditColumns"
+               :siteEditColumns="siteEditColumns"
                :subConfig="subElConfig"
                :formData="formData"
                :siteFormInfo="siteFormInfo"
@@ -36,7 +36,7 @@ export default {
   },
   data() {
     return {
-      inEditColumns: [{
+      siteEditColumns: [{
         label: '位点rs号',
         key: 'rs_name'
       },

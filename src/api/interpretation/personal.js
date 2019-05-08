@@ -42,7 +42,7 @@ export function gallPersonality(secondary_name) {
 
 export function glistKnowlege(primary_name, knowlege_name) {
   return request({
-    url: '/drug/list_knowlege',
+    url: '/product/list_knowlege',
     method: 'get',
     params: { primary_name, knowlege_name }
   })

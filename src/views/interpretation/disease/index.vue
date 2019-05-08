@@ -48,12 +48,16 @@ export default {
         key: 'gene'
       },
       {
-        label: 'EffectAllele',
-        key: 'effect_allele'
+        label: '参考碱基',
+        key: 'ref'
       },
       {
-        label: '次要allele',
-        key: 'other_allele'
+        label: '突变碱基',
+        key: 'alt'
+      },
+      {
+        label: '风险碱基',
+        key: 'effect_allele'
       },
       {
         label: 'OR值',
@@ -72,16 +76,16 @@ export default {
         key: 'p_value'
       },
       {
-        label: 'HomRef频率',
-        key: 'homeRefFrequency'
+        label: '正常基因型人群频率',
+        key: 'normalFrequency'
       },
       {
-        label: 'Het频率',
+        label: '杂合基因型人群频率',
         key: 'hetFrequency'
       },
       {
-        label: 'HomAlt频率',
-        key: 'homAltFrequency'
+        label: '风险基因型人群频率',
+        key: 'riskFrequency'
       },
       {
         label: '文献',
@@ -94,7 +98,8 @@ export default {
         primary_name: '常见疾病',
         secondary_name: '',
         indicate_name: '',
-        knowledge_name: ''
+        knowledge_name: '',
+        indicate_class: ''
       },
       // 主表单动态表单的配置文件
       subElConfig: {
@@ -139,21 +144,24 @@ export default {
       },
       {
         label: '评估指标',
-        key: 'assesement'
+        key: 'evaluation_indicator'
       },
       {
         label: '解读详情',
-        key: 'detail',
+        key: 'interpretation_details',
         width: '250px'
       },
       {
         label: '建议对策',
-        key: 'suggtion',
+        key: 'suggest',
         width: '300px'
       }],
       // 结论表单数据初始化
       conclusionFormInfo: {
-        primary_name: ''
+        conclusion: '',
+        evaluation_indicator: '',
+        interpretation_details: '',
+        suggest: ''
       },
       // 结论表单动态生成配置文件
       conclusionConfig: {
@@ -166,7 +174,7 @@ export default {
             cols: 10
           },
           {
-            name: 'assesement',
+            name: 'evaluation_indicator',
             label: '评估指标',
             placeholder: '结论对应的OR范围区间',
             fieldType: 'TextInput',
@@ -178,17 +186,47 @@ export default {
       siteFormInfo: {
         rs_name: '',
         gene: '',
+        ref: '',
+        alt: '',
         effect_allele: '',
-        other_allele: '',
         jb_or: '',
         beta: '',
-        homeRefFrequency: '',
+        normalFrequency: '',
         hetFrequency: '',
-        homAltFrequency: '',
+        riskFrequency: '',
         CI: '',
         p_value: '',
         reference: ''
       },
+      /*
+      "rs_name": "rs103294 ",
+      "gene": "LILRA3 ",
+      "ref": "C",
+      "alt": "T",
+      "effect_allele": "C",
+      "jb_or": "1.28",
+      "beta": null,
+      "CI": null,
+      "p_value": null,
+      "hetFrequency": "0.39",// hetFrequency
+      "homAltFrequency": "0.29", //riskFrequency
+      "homeRefFrequency": "0.32", //normalFrequency
+      "reference": "Xu J, Mo Z, Ye D, et al. Genome-wide association study in Chinese men identifies two new prostate cancer risk loci at 9q31.2 and 19q13.4[J]. Nature Genetics, 2012, 44(11):1231-5.",
+      //以下未设置
+      "Initial_Sample_Size": null,
+      "Link": null,
+      "PUBMEDID": null,
+      "Population": null,
+      "Replication": null,
+      "commonDisease_id": 9,
+      "date": null,
+      "delete_at": null,
+      "disease": null,
+      "genotype": null,
+      "id": 24,
+      "journal": null,
+      "study_name": null
+      */
       // 位点表单动态配置
       siteConfig: {
         fieldsConfig: [
@@ -209,9 +247,9 @@ export default {
             cols: 12
           },
           {
-            name: 'effect_allele',
-            prop: 'effect_allele',
-            label: '主效碱基',
+            name: 'ref',
+            prop: 'ref',
+            label: '参考碱基',
             placeholder: '请选择碱基',
             fieldType: 'SelectList',
             options: [
@@ -223,9 +261,23 @@ export default {
             cols: 12
           },
           {
-            name: 'other_allele',
-            label: '次要碱基',
-            prop: 'other_allele',
+            name: 'alt',
+            prop: 'alt',
+            label: '突变碱基',
+            placeholder: '请选择碱基',
+            fieldType: 'SelectList',
+            options: [
+              { label: 'A', value: 'A' },
+              { label: 'T', value: 'T' },
+              { label: 'C', value: 'C' },
+              { label: 'G', value: 'G' }
+            ],
+            cols: 12
+          },
+          {
+            name: 'effect_allele',
+            label: '主效碱基',
+            prop: 'effect_allele',
             placeholder: '请选择碱基',
             fieldType: 'SelectList',
             options: [

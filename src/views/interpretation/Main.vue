@@ -42,7 +42,7 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.page_size" @pagination="getList" />
     <!--页码 结束-->
     <!--新增编辑表单 开始-->
-    <addEditForm ref="addEditForm" :dialogStatus="dialogStatus" :siteFormInfo="siteFormInfo" :dialogFormInfo="dialogFormInfo" :inEditForm="inEditForm" :conclusionDiaForm="dialogFormInfo" :dialogFormVisible="dialogVisible"  @cancel="resetDialog()"></addEditForm>
+    <addEditForm ref="addEditForm" :dialogStatus="dialogStatus" :siteEditForm="siteEditForm" :conclustionEditForm="conclustionEditForm" :dialogFormVisible="dialogVisible"  @cancel="resetDialog()"></addEditForm>
     <!--新增编辑表单 结束-->
   </div>
 </template>
@@ -99,10 +99,10 @@ export default {
     formData: {
       type: Object
     },
-    siteFormInfo: {
+    siteConfig: {
       type: Object
     },
-    siteConfig: {
+    siteFormInfo: {
       type: Object
     },
     conclusionFormInfo: {
@@ -134,26 +134,21 @@ export default {
       deleted: {
         id: null
       },
-      dialogFormInfo: this.formData,
+      subFormInfo: this.formData,
       dialogVisible: false,
       dialogStatus: '',
-      inEditForm: []
+      siteEditForm: [],
+      conclustionEditForm: []
     }
   },
   created() {
     this.getList()
-  },
-  watch: {
-    formData(val) {
-      this.dialogFormInfo = val
-    }
   },
   methods: {
     getList() {
       this.listLoading = true
       this.fetchList(this.listQuery).then(response => {
         this.tableList = response.data.results
-        console.log(this.tableList)
         for (const i of this.tableList) {
           i.disease_code = (Array(4).join('0') + i.disease_code).slice(-4) // 得到特定长度
           // i.disease_code = i.primary_code + i.disease_code // 更替disase_code
@@ -196,17 +191,20 @@ export default {
     resetDialog() {
       this.dialogVisible = false // dialog关闭
       this.$refs.addEditForm.resetTable() // 调用Form中的重置数据 ，重置table可编辑表单
-      this.dialogFormInfo = this.formData // 调用index传递过来的formData 重置表单
+      this.subFormInfo = this.formData // 调用index传递过来的formData 重置表单
       this.getList()
     },
     handleCreate() {
-      console.log(this.dialogFormInfo)
       this.dialogStatus = 'create'
       this.dialogVisible = true
     },
     handleUpdate(row) {
       this.dialogFormInfo = Object.assign({}, row) // copy obj
-      this.inEditForm = JSON.parse(this.dialogFormInfo.front_end_json)
+      for (var name in this.subFormInfo) {
+        this.subFormInfo[name] = this.dialogFormInfo[name]
+      }
+      this.siteEditForm = JSON.parse(this.dialogFormInfo.site_result)
+      this.conclustionEditForm = JSON.parse(this.dialogFormInfo.conclusion_result)
       this.dialogStatus = 'update'
       this.dialogVisible = true
     },
