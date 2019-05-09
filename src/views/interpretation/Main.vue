@@ -19,6 +19,11 @@
           <span>{{ scope.row.indicate_name }}</span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('table.indicate_class')" prop="indicate_class" align="center" width="160px" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.indicate_class }}</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('table.primary_name')" prop="primary_name" align="center" width="160px" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.primary_name }}</span>
@@ -203,6 +208,8 @@ export default {
       for (var name in this.subFormInfo) {
         this.subFormInfo[name] = this.dialogFormInfo[name]
       }
+      this.subFormInfo.id = this.dialogFormInfo.id
+      console.log(this.dialogFormInfo)
       this.siteEditForm = JSON.parse(this.dialogFormInfo.site_result)
       this.conclustionEditForm = JSON.parse(this.dialogFormInfo.conclusion_result)
       this.dialogStatus = 'update'

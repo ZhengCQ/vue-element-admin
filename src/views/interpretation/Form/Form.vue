@@ -118,12 +118,17 @@ export default {
     resetTable() { // 主页面的cancer调用重置
       this.siteTableList = []
       this.showValueForm = false // 重置新增位点页面
+      this.conclustionTableList = []
+      this.showClusionForm = false
     },
     // 将每次的结论增加到结论表格中
     handleCreateConclusion() {
       const concluTemp = Object.assign({}, this.$refs.conclusionform.FormInfo) // 将siteform的值赋值给siteTableList,给表格
+      console.log(concluTemp)
+      concluTemp.evaluation_indicator = concluTemp.conclusion[2]
+      concluTemp.conclusion = concluTemp.conclusion[1]
       concluTemp.id = this.conid // id赋值，便于删除
-      concluTemp.edit = false // 可编辑表单
+      // concluTemp.edit = false // 可编辑表单
       this.conid++
       this.conclustionTableList.push(concluTemp)
       this.showClusionForm = false
@@ -134,7 +139,7 @@ export default {
       const sitesTemp = Object.assign({}, this.$refs.siteform.FormInfo) // 将siteform的值赋值给siteTableList,给表格
       console.log(sitesTemp)
       sitesTemp.id = this.siteid
-      sitesTemp.edit = false
+      // sitesTemp.edit = false
       this.siteid++
       this.siteTableList.push(sitesTemp)
       this.showValueForm = false
@@ -143,10 +148,9 @@ export default {
     createData() {
       const tempData = Object.assign({}, this.$refs.subelform.indicateForm) // subelform从获取数据, 中赋值到data
       tempData.site_result = []
-      tempData.site_result = JSON.stringify(this.$refs.siteTable.tableData) // 从inEditTable中获取数据,最终数据来自表格
       tempData.conclusion_result = []
-      tempData.conclusion_result = JSON.stringify(this.$refs.conclustionTable.tableData)
-      console.log(tempData)
+      tempData.site_result = this.$refs.siteTable.tableData// 从inEditTable中获取数据,最终数据来自表格
+      tempData.conclusion_result = this.$refs.conclustionTable.tableData
       this.InterpMainApp.createDataForm(JSON.stringify(tempData)).then(() => {
         this.$emit('cancel') // 调用父组件的cancer方法
         this.$notify({
@@ -159,7 +163,9 @@ export default {
     },
     updateData() {
       const tempData = Object.assign({}, this.$refs.subelform.indicateForm) // subelform从获取数据，中赋值到data
-      tempData.results = JSON.stringify(this.$refs.inEditTable.tableData) // 传回后台的的是results值，需要重新赋值。从inEditTable中获取表格数据
+      tempData.site_result = this.$refs.siteTable.tableData // 传回后台的的是results值，需要重新赋值。从inEditTable中获取表格数据
+      tempData.conclusion_result = this.$refs.conclustionTable.tableData
+      console.log(tempData)
       this.InterpMainApp.updateDataForm(JSON.stringify(tempData)).then(() => {
         this.$emit('cancel') // 调用父组件的cancer方法
         this.$notify({

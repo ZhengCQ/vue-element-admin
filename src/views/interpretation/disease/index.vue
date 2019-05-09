@@ -130,6 +130,15 @@ export default {
             trigerFocus: false
           },
           {
+            name: 'indicate_class',
+            label: '指标名称类别',
+            prop: 'indicate_class',
+            fieldType: 'autoComplete',
+            cols: 16,
+            querySearch: 'querySearchIndi',
+            trigerFocus: false
+          },
+          {
             name: 'knowledge_name',
             label: '素材选择',
             fieldType: 'autoComplete',
@@ -141,6 +150,11 @@ export default {
       conclustionColumns: [{
         label: '结论',
         key: 'conclusion'
+      },
+      {
+        label: '结论说明',
+        key: 'explanation',
+        width: '200px'
       },
       {
         label: '评估指标',
@@ -159,6 +173,7 @@ export default {
       // 结论表单数据初始化
       conclusionFormInfo: {
         conclusion: '',
+        explanation: '',
         evaluation_indicator: '',
         interpretation_details: '',
         suggest: ''
@@ -168,17 +183,50 @@ export default {
         fieldsConfig: [
           {
             name: 'conclusion',
-            label: '结论',
-            placeholder: '风险等级',
-            fieldType: 'TextInput',
-            cols: 10
-          },
-          {
-            name: 'evaluation_indicator',
-            label: '评估指标',
-            placeholder: '结论对应的OR范围区间',
-            fieldType: 'TextInput',
-            cols: 12
+            label: '分类结论与评估',
+            placeholder: '风险等级和评估指标',
+            fieldType: 'CasCader',
+            options: [
+              {
+                label: '三级', value: '三级分类', children: [
+                  { label: '低风险', value: '低风险', children: [
+                    { label: '<0.8', value: '<0.8' },
+                    { label: '<0.9', value: '<0.9' }]
+                  },
+                  { label: '一般风险', value: '一般风险', children: [
+                    { label: '0.8<=x<1.1', value: '>=0.8&&<1.1' },
+                    { label: '0.9<=x<1.1', value: '>=0.9&&<1.1' }]
+                  },
+                  { label: '高风险', value: '高风险', children: [
+                    { label: '>=1.1', value: '>=1.1' },
+                    { label: '>=1.4', value: '>=1.4' }]
+                  }
+                ]
+              },
+              {
+                label: '五级', value: '五级分类', children: [
+                  { label: '低风险', value: '低风险', children: [
+                    { label: '<0.8', value: '<0.8' },
+                    { label: '<0.9', value: '<0.9' }]
+                  },
+                  { label: '一般风险', value: '一般风险', children: [
+                    { label: '0.8<=x<1.1', value: '>=0.8&&<1.1' },
+                    { label: '0.9<=x<1.1', value: '>=0.9&&<1.1' }]
+                  },
+                  { label: '稍高风险', value: '稍高风险', children: [
+                    { label: '1.1<=x<1.4', value: '>=1.1&&<1.4' }]
+                  },
+                  { label: '高风险', value: '高风险', children: [
+                    { label: '>=1.1', value: '>=1.1' },
+                    { label: '>=1.4', value: '>=1.4' }]
+                  },
+                  { label: '极高风险', value: '极高风险', children: [
+                    { label: '>=2', value: '>=2' }]
+                  }
+                ]
+              }
+            ],
+            cols: 20
           }
         ]
       },
@@ -294,7 +342,7 @@ export default {
             placeholder: '整数或小数',
             prop: 'jb_or',
             fieldType: 'NumInput',
-            cols: 8
+            cols: 12
           },
           {
             name: 'beta',
@@ -318,26 +366,26 @@ export default {
             cols: 8
           },
           {
-            name: 'homeRefFrequency',
-            label: 'homRef频率',
-            prop: 'homeRefFrequency',
+            name: 'normalFrequency',
+            label: '正常基因型人群频率',
+            prop: 'normalFrequency',
             placeholder: '小数0~1',
             fieldType: 'NumInput',
             cols: 8
           },
           {
             name: 'hetFrequency',
-            label: 'het频率',
+            label: '杂合基因型人群频率',
             prop: 'hetFrequency',
             placeholder: '小数0~1',
             fieldType: 'NumInput',
             cols: 8
           },
           {
-            name: 'homAltFrequency',
-            label: 'homAlt频率',
+            name: 'riskFrequency',
+            label: '风险基因型人群频率',
             placeholder: '小数0~1',
-            prop: 'homAltFrequency',
+            prop: 'riskFrequency',
             fieldType: 'NumInput',
             cols: 8
           }
@@ -354,7 +402,7 @@ export default {
         ],
         effect_allele: [{ message: '请选择一个碱基', required: 'true', trigger: 'blur' }],
         other_allele: [{ message: '请选择一个碱基', required: 'true', trigger: 'blur' }],
-        homeRefFrequency: [
+        normalFrequency: [
           { message: '值为小数，范围0~1', required: 'true', type: 'number', trigger: 'blur' },
           { pattern: /0 | ^0\.\d{1,10}$/, message: '请输入0-1之间的小数', trigger: 'blur' }
         ],
@@ -362,7 +410,7 @@ export default {
           { message: '值为小数，范围0~1', required: 'true', type: 'number', trigger: 'blur' },
           { pattern: /0 | ^0\.\d{1,10}$/, message: '请输入0-1之间的小数', trigger: 'blur' }
         ],
-        homAltFrequency: [
+        riskFrequency: [
           { message: '值为小数，范围0~1', required: 'true', type: 'number', trigger: 'blur' },
           { pattern: /0 | ^0\.\d{1,10}$/, message: '请输入0-1之间的小数', trigger: 'blur' }
         ]

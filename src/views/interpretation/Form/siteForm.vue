@@ -47,7 +47,6 @@ export default {
     async querySearchRs(queryString, callback) {
       const name = this.FormInfo.rs_name
       var itemData = await gfindRsName(name)
-      console.log(itemData)
       itemData = itemData.data.rs_name
       const list = transQueryList(queryString, itemData)
       callback(list)

@@ -10,6 +10,9 @@
       </el-row>
     </el-form>
   <el-form style="width: 600px;margin-left:50px;" v-if="showForm">
+    <el-form-item :label="$t('table.explanation')" prop="explanation">
+      <el-input placeholder="结论说明和概况" type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="FormInfo.explanation" clearable> </el-input>
+    </el-form-item>
     <el-form-item :label="$t('table.interpretation')" prop="interpretation">
       <el-input placeholder="结论的详细解读及建议概述" type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="FormInfo.interpretation_details" clearable> </el-input>
     </el-form-item>

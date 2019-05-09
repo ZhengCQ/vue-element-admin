@@ -25,9 +25,10 @@ import TextInput from './basic/TextInput'
 import NumInput from './basic/NumInput'
 import SelectList from './basic/SelectList'
 import multiTextInput from './basic/multiTextInput'
+import CasCader from './basic/cascader.vue'
 export default {
   name: 'FormGenerator',
-  components: { autoComplete, TextInput, SelectList, multiTextInput, NumInput },
+  components: { autoComplete, TextInput, SelectList, multiTextInput, NumInput, CasCader },
   props: ['config', 'value'],
   data() {
     return {
