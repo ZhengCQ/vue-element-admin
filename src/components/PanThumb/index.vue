@@ -14,8 +14,7 @@ export default {
   name: 'PanThumb',
   props: {
     image: {
-      type: String,
-      required: true
+      type: String
     },
     zIndex: {
       type: Number,
