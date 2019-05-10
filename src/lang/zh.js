@@ -114,7 +114,7 @@ export default {
   table: {
     product_id: '产品序号',
     product_items: '检测项',
-    product_manager: '产品经理',
+    product_users: '产品归属人',
     product_name: '产品名称',
     status: '产品状态',
     product_class: '产品类型',
@@ -125,7 +125,7 @@ export default {
     primary_name: '一级分类',
     secondary_name: '二级分类',
     indicate_name: '指标名称',
-    indicate_class: '指标类别',
+    indicate_class: '指标类',
     knowledge_name: '相关知识库',
     snp_name: '位点编号',
     gene: '基因名称',

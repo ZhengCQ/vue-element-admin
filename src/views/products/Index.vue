@@ -4,7 +4,7 @@
     <div class="filter-container">
       <!--搜索-->
       <el-input :placeholder="$t('table.product_name')" v-model="listQuery.product_name" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input :placeholder="$t('table.product_manager')" v-model="listQuery.product_manager" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input :placeholder="$t('table.product_users')" v-model="listQuery.users" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-select v-model="listQuery.state" :placeholder="$t('table.status')" clearable class="filter-item" style="width: 130px">
         <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
       </el-select>
@@ -28,9 +28,9 @@
           <span>{{ scope.row.product_class }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.product_manager')" prop="product_manager" align="center" width="160px" sortable>
+      <el-table-column :label="$t('table.product_users')" align="center" width="160px" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.product_manager }}</span>
+          <span>{{ scope.row.users.join(',') }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.product_name')" prop="product_name" align="center" width="160px" sortable>
@@ -113,7 +113,7 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        product_manager: undefined,
+        product_users: undefined,
         product_name: undefined,
         sort: '+id',
         state: undefined
@@ -121,7 +121,7 @@ export default {
       dialogFormInfo: {
         product_name: null,
         product_class: null,
-        product_manager: null,
+        users: [],
         state: null,
         results: []
       },
@@ -187,7 +187,7 @@ export default {
       this.dialogFormInfo = {
         product_name: null,
         product_class: null,
-        product_manager: null,
+        users: [],
         state: null,
         results: []
       }
@@ -201,6 +201,7 @@ export default {
     handleUpdate(row) {
       this.resetTemp()
       this.dialogFormInfo = Object.assign({}, row) // copy obj
+      console.log(row)
       this.treeFormData = JSON.parse(row.front_end_json)
       this.dialogStatus = 'update'
       this.dialogVisible = true
@@ -243,7 +244,7 @@ export default {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
         const tHeader = ['时间', '产品序号', '产品类型', '产品经理', '产品名称', '产品状态']
-        const filterVal = ['timestamp', 'id', 'product_class', 'product_manager', 'product_name', 'status']
+        const filterVal = ['timestamp', 'id', 'product_class', 'users', 'product_name', 'status']
         const data = this.formatJson(filterVal, this.productsList)
         excel.export_json_to_excel({
           header: tHeader,

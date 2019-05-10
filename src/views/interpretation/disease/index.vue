@@ -9,14 +9,14 @@
                :createDataForm="paddDisease"
                :updateDataForm="peditDisease"
                :siteEditColumns="siteEditColumns"
-               :conclustionColumns="conclustionColumns"
                :subConfig="subElConfig"
+               :conclusionFormInfo="conclusionFormInfo"
+               :conclusionConfig="conclusionConfig"
+               :conclustionColumns="conclustionColumns"
                :formData="formData"
                :siteFormInfo="siteFormInfo"
                :siteConfig="siteConfig"
                :rules="rules"
-               :conclusionFormInfo="conclusionFormInfo"
-               :conclusionConfig="conclusionConfig"
                />
 </template>
 <script>
@@ -38,61 +38,6 @@ export default {
   },
   data() {
     return {
-      // 可编辑表格的动态配置
-      siteEditColumns: [{
-        label: '位点rs号',
-        key: 'rs_name'
-      },
-      {
-        label: 'Gene',
-        key: 'gene'
-      },
-      {
-        label: '参考碱基',
-        key: 'ref'
-      },
-      {
-        label: '突变碱基',
-        key: 'alt'
-      },
-      {
-        label: '风险碱基',
-        key: 'effect_allele'
-      },
-      {
-        label: 'OR值',
-        key: 'jb_or'
-      },
-      {
-        label: 'Beta',
-        key: 'beta'
-      },
-      {
-        label: 'CI值',
-        key: 'CI'
-      },
-      {
-        label: 'Pvalue',
-        key: 'p_value'
-      },
-      {
-        label: '正常基因型人群频率',
-        key: 'normalFrequency'
-      },
-      {
-        label: '杂合基因型人群频率',
-        key: 'hetFrequency'
-      },
-      {
-        label: '风险基因型人群频率',
-        key: 'riskFrequency'
-      },
-      {
-        label: '文献',
-        key: 'reference',
-        width: '460px'
-      }
-      ],
       // 主表单需要收集的form数据
       formData: {
         primary_name: '常见疾病',
@@ -147,29 +92,6 @@ export default {
           }
         ]
       },
-      conclustionColumns: [{
-        label: '结论',
-        key: 'conclusion'
-      },
-      {
-        label: '结论说明',
-        key: 'explanation',
-        width: '200px'
-      },
-      {
-        label: '评估指标',
-        key: 'evaluation_indicator'
-      },
-      {
-        label: '解读详情',
-        key: 'interpretation_details',
-        width: '250px'
-      },
-      {
-        label: '建议对策',
-        key: 'suggest',
-        width: '300px'
-      }],
       // 结论表单数据初始化
       conclusionFormInfo: {
         conclusion: '',
@@ -230,6 +152,30 @@ export default {
           }
         ]
       },
+      // 位点可编辑表格的动态配置
+      conclustionColumns: [{
+        label: '结论',
+        key: 'conclusion'
+      },
+      {
+        label: '结论说明',
+        key: 'explanation',
+        width: '200px'
+      },
+      {
+        label: '评估指标',
+        key: 'evaluation_indicator'
+      },
+      {
+        label: '解读详情',
+        key: 'interpretation_details',
+        width: '250px'
+      },
+      {
+        label: '建议对策',
+        key: 'suggest',
+        width: '300px'
+      }],
       // 位点表单数据初始化
       siteFormInfo: {
         rs_name: '',
@@ -383,6 +329,61 @@ export default {
           }
         ]
       },
+      // 位点可编辑表格的动态配置
+      siteEditColumns: [{
+        label: '位点rs号',
+        key: 'rs_name'
+      },
+      {
+        label: 'Gene',
+        key: 'gene'
+      },
+      {
+        label: '参考碱基',
+        key: 'ref'
+      },
+      {
+        label: '突变碱基',
+        key: 'alt'
+      },
+      {
+        label: '风险碱基',
+        key: 'effect_allele'
+      },
+      {
+        label: 'OR值',
+        key: 'jb_or'
+      },
+      {
+        label: 'Beta',
+        key: 'beta'
+      },
+      {
+        label: 'CI值',
+        key: 'CI'
+      },
+      {
+        label: 'Pvalue',
+        key: 'p_value'
+      },
+      {
+        label: '正常基因型人群频率',
+        key: 'normalFrequency'
+      },
+      {
+        label: '杂合基因型人群频率',
+        key: 'hetFrequency'
+      },
+      {
+        label: '风险基因型人群频率',
+        key: 'riskFrequency'
+      },
+      {
+        label: '文献',
+        key: 'reference',
+        width: '460px'
+      }
+      ],
       // 表单验证规则
       rules: {
         primary_name: [{ message: '必填项', required: 'true' }],

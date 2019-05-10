@@ -14,11 +14,12 @@
           <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
         </el-select>
       </el-form-item>
-      <el-form-item :label="$t('table.product_manager')" prop="product_manager">
-        <el-select v-model="dialogFormInfo.product_manager" class="filter-item" placeholder="Please select">
+      <el-form-item :label="$t('table.product_users')" prop="product_users">
+        <el-select v-model="dialogFormInfo.users" multiple class="filter-item" placeholder="产品可用权限">
           <el-option v-for="item in managerOptions" :key="item" :label="item" :value="item" />
         </el-select>
       </el-form-item>
+
       <!--多级远程搜索指标开始-->
       <el-cascader :options="optionPrimary" @active-item-change="handleItemChange" :props="optionProps" @change="handleValue"></el-cascader>
       <!--多级远程搜索指标结束-->
@@ -55,6 +56,7 @@
 </template>
 <script type="text/javascript">
 import { getSecondary, gallDisease, getProductName, gallPersonality, gallDrug, createDataForm, updateDataForm } from '@/api/product'
+import { glistUser } from '@/api/user/user'
 import treeTable from '@/components/TreeTable'
 export default {
   components: { treeTable },
@@ -113,10 +115,9 @@ export default {
       rules: {
         name: [{ required: true, message: '产品名称必填且名称需唯一', trigger: 'focus' }],
         product_class: [{ required: true, message: 'product_class is required', trigger: 'change' }],
-        status: [{ required: true, message: 'status is required', trigger: 'blur' }],
-        product_manager: [{ required: true, message: '产品经理必选', trigger: 'change' }]
+        status: [{ required: true, message: 'status is required', trigger: 'blur' }]
       },
-      managerOptions: ['罗宏敏', '汤丽慧', '翟晶'],
+      managerOptions: [],
       optionPrimary: [{
         label: '常见疾病',
         secondary: []
@@ -151,6 +152,9 @@ export default {
       type: Array
     }
   },
+  created() {
+    this.glistUser()
+  },
   watch: {
     // prop 传递dialog新建和编辑表格，变量再赋值
     dialogFormVisible(val) {
@@ -175,6 +179,12 @@ export default {
   methods: {
     onCancel() {
       this.$emit('cancel')
+    },
+    async glistUser() {
+      const userinfo = await glistUser()
+      userinfo.data.results.forEach(item => {
+        this.managerOptions.push(item.name)
+      })
     },
     handleSelect(item) {
       console.log(item)

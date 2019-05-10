@@ -23,7 +23,7 @@ const knowledgesRouter = {
       path: 'character',
       component: () => import('@/views/knowledges/personal/index'),
       name: 'Character',
-      meta: { title: 'character', icon: 'tezheng', noCache: false }
+      meta: { title: 'personal', icon: 'tezheng', noCache: false }
     },
     {
       path: 'mendelian',
