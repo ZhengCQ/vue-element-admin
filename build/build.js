@@ -10,6 +10,7 @@ const config = require('../config')
 const webpackConfig = require('./webpack.prod.conf')
 var connect = require('connect')
 var serveStatic = require('serve-static')
+var CircularJSON = require('circular-json')
 
 const spinner = ora(
   'building for ' + process.env.env_config + ' environment...'
