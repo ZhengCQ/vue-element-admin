@@ -5,7 +5,6 @@
                     v-model="currentValue"
                     :fetch-suggestions="querySearch"
                     :placeholder="placeholder"
-                    @select="handleSelect"
                     @input="onInputEvent"
                     :trigger-on-focus="trigerFocus"
     >
@@ -23,9 +22,10 @@ export default {
     }
   },
   mixins: [formMixins], // 监控value值的变化
+  // 该方法可不采用
   methods: {
-    handleSelect(item) {
-      this.$emit('input', this.name, this.currentValue) // 将name 和判定的值传回到上一级，上一级捕获后更新formData
+    async handleSelect(item) {
+      // this.$emit('input', this.name, this.currentValue) // this.name来自fieldsConfig中的name表示，代表当前表单的name, 将name 和判定的值传回到上一级，上一级父组件中捕获后更新值@input="updateForm" formData值
     }
   }
 }

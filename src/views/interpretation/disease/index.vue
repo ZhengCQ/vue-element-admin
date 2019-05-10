@@ -298,14 +298,8 @@ export default {
             name: 'ref',
             prop: 'ref',
             label: '参考碱基',
-            placeholder: '请选择碱基',
-            fieldType: 'SelectList',
-            options: [
-              { label: 'A', value: 'A' },
-              { label: 'T', value: 'T' },
-              { label: 'C', value: 'C' },
-              { label: 'G', value: 'G' }
-            ],
+            placeholder: '碱基输入ATCG',
+            fieldType: 'TextInput',
             cols: 12
           },
           {
@@ -329,10 +323,8 @@ export default {
             placeholder: '请选择碱基',
             fieldType: 'SelectList',
             options: [
-              { label: 'A', value: 'A' },
-              { label: 'T', value: 'T' },
-              { label: 'C', value: 'C' },
-              { label: 'G', value: 'G' }
+              { label: '参考碱基', value: 'ref' },
+              { label: '突变碱基', value: 'alt' }
             ],
             cols: 12
           },

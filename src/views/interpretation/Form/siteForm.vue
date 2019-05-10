@@ -3,6 +3,7 @@
     <el-form :inline="true" :model="FormInfo" :rules="rules" label-position="left" style="width: 600px;margin-left:50px;" v-if="showForm">
       <el-row>
         <form-generator
+                ref="formgenerator"
                 :config="config"
                 v-model="FormInfo"
                 :rules="rules"
@@ -19,12 +20,12 @@
   </div>
 </template>
 <script type="text/javascript">
-import { gfindRsName } from '@/api/interpretation'
+import { gfindRsName, gfindSiteDetail } from '@/api/interpretation/common'
 import transQueryList from '@/utils/utils'
 import FormGenerator from '@/components/Form/FormGenerator'
 
 export default {
-  name: 'ConclusionForm',
+  name: 'SiteForm',
   components: { FormGenerator },
   inject: ['InterpMainApp'], // 从Main.vue中获取数据
   data() {
@@ -42,6 +43,30 @@ export default {
   created() {
     this.querySearchType()
   },
+  computed: {
+    rs_name() {
+      return this.FormInfo.rs_name
+    },
+    alt() {
+      return this.FormInfo.alt
+    },
+    ref() {
+      return this.FormInfo.ref
+    }
+  },
+  watch: {
+    rs_name(newValue, oldValue) {
+      this.queryRsDetail(newValue)
+    },
+    alt(newValue, oldValue) {
+      console.log(newValue)
+      console.log(oldValue)
+    },
+    ref(newValue, oldValue) {
+      console.log(newValue)
+      console.log(oldValue)
+    }
+  },
   methods: {
     // 位点搜寻
     async querySearchRs(queryString, callback) {
@@ -50,6 +75,22 @@ export default {
       itemData = itemData.data.rs_name
       const list = transQueryList(queryString, itemData)
       callback(list)
+    },
+    async queryRsDetail(rs_name) {
+      var itemData = await gfindSiteDetail(rs_name)
+      var altArray = []
+      console.log(itemData.data.result)
+      console.log(this.FormInfo)
+      this.FormInfo.gene = itemData.data.result[0].gene
+      this.FormInfo.ref = itemData.data.result[0].ref
+      // alt 有多个，当alt不为空的时候，将alt存为数组，输出到alt的options共选择
+      itemData.data.result.forEach(item => {
+        if (item.alt) {
+          altArray.push(
+            { label: item.alt, value: item.alt },
+          )
+        }
+      })
     },
     querySearchType() { // 函数一时没有找到方法直接转递，采用字符传递方式，再用方法替代。
       this.config.fieldsConfig.forEach((item, index) => {

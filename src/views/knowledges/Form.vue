@@ -3,7 +3,7 @@
   <el-dialog :title="textMap[dialogStatus]" :visible="dialogVisible" @close="onCancel" customClass="customWidth">
     <el-form :model="dialogFormInfo" label-position="left" label-width="100px" style="width: 800px; margin-left:50px;">
       <el-form-item label="名称" label-width="120px">
-        <el-input v-model="dialogFormInfo.material_name" auto-complete="off"></el-input>
+        <el-input v-model="dialogFormInfo.knowledge_name" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="内容" label-width="120px">
         <tinymce :value="dialogFormInfo.richTextFormatContent" v-model="dialogFormInfo.richTextFormatContent"/>
@@ -61,17 +61,19 @@ export default {
       this.$emit('cancel')
     },
     async createData() {
+      console.log(this.dialogFormInfo)
       const range = await this.paddKnowlege(this.dialogFormInfo)
       if (range) {
-        this.$message('素材:' + this.dialogFormInfo.material_name + ';创建' + '成功')
+        this.$message('素材:' + this.dialogFormInfo.knowledge_name + ';创建' + '成功')
         this.onCancel()
       }
     },
     async updateData() {
+      console.log(this.dialogFormInfo)
       const tempData = Object.assign({}, this.dialogFormInfo)
       const range = await this.peditKnowlege(tempData)
       if (range) {
-        this.$message('素材:' + this.dialogFormInfo.material_name + ';更新' + '成功')
+        this.$message('素材:' + this.dialogFormInfo.knowledge_name + ';更新' + '成功')
         this.onCancel()
       }
     }

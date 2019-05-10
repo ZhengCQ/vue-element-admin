@@ -72,6 +72,14 @@ export function gfindRsName(rsName) {
   })
 }
 
+export function gfindSiteDetail(rsName) {
+  return request({
+    url: '/query/rs_site_detail',
+    method: 'get',
+    params: { rsName }
+  })
+}
+
 export function precieveData(upload) {
   return request({
     url: '/product/recieve_data',

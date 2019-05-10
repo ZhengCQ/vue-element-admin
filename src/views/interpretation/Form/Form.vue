@@ -124,7 +124,6 @@ export default {
     // 将每次的结论增加到结论表格中
     handleCreateConclusion() {
       const concluTemp = Object.assign({}, this.$refs.conclusionform.FormInfo) // 将siteform的值赋值给siteTableList,给表格
-      console.log(concluTemp)
       concluTemp.evaluation_indicator = concluTemp.conclusion[2]
       concluTemp.conclusion = concluTemp.conclusion[1]
       concluTemp.id = this.conid // id赋值，便于删除
@@ -137,8 +136,12 @@ export default {
     // 将每次的位点增加到位点表格中
     handleCreateSnps() {
       const sitesTemp = Object.assign({}, this.$refs.siteform.FormInfo) // 将siteform的值赋值给siteTableList,给表格
-      console.log(sitesTemp)
       sitesTemp.id = this.siteid
+      if (sitesTemp.effect_allele === 'alt') {
+        sitesTemp.effect_allele = sitesTemp.alt
+      } else {
+        sitesTemp.effect_allele = sitesTemp.ref
+      }
       // sitesTemp.edit = false
       this.siteid++
       this.siteTableList.push(sitesTemp)

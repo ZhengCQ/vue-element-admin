@@ -15,7 +15,7 @@
       </el-table-column>
       <el-table-column :label="$t('table.material_name')" prop="material_name" align="center" width="160px" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.material_name }}</span>
+          <span>{{ scope.row.knowledge_name }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.actions')" align="center" width="320px" class-name="small-padding fixed-width">
@@ -81,7 +81,7 @@ export default {
       },
       dialogFormInfo: {
         richTextFormatContent: '',
-        material_name: ''
+        knowledge_name: ''
       },
       dialogVisible: false,
       dialogStatus: ''

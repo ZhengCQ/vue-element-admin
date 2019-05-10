@@ -15,13 +15,13 @@
 import formMixins from '@/mixins/form-model'
 export default {
   name: 'SelectList',
-  props: ['multi', 'options', 'name', 'prop', 'label', 'value'],
-  mixins: [formMixins],
+  props: ['options', 'prop', 'label', 'value', 'placeholder'],
   data() {
     return {
       currentValue: this.value
     }
-  }
+  },
+  mixins: [formMixins]
 }
 
 </script>
