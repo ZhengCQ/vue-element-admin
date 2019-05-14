@@ -5,7 +5,6 @@
                :getPrimary="gallPrimary"
                :getSecondary="gallSecondary"
                :getIndicate="gallDisease"
-               :glistKnowlege="glistKnowlege"
                :createDataForm="paddDisease"
                :updateDataForm="peditDisease"
                :siteEditColumns="siteEditColumns"
@@ -20,7 +19,7 @@
                />
 </template>
 <script>
-import { glistdisease, gdeleteDisease, gallPrimary, gallSecondary, gallDisease, glistKnowlege, paddDisease, peditDisease } from '@/api/interpretation/disease'
+import { glistdisease, gdeleteDisease, gallPrimary, gallSecondary, gallDisease, paddDisease, peditDisease } from '@/api/interpretation/disease'
 import maincontent from '../Main'
 export default {
   components: {
@@ -32,7 +31,6 @@ export default {
     gallPrimary,
     gallSecondary,
     gallDisease,
-    glistKnowlege,
     paddDisease,
     peditDisease
   },
@@ -76,7 +74,7 @@ export default {
           },
           {
             name: 'indicate_class',
-            label: '指标名称类别',
+            label: '指标类',
             prop: 'indicate_class',
             fieldType: 'autoComplete',
             cols: 16,
@@ -116,11 +114,11 @@ export default {
                     { label: '<0.9', value: '<0.9' }]
                   },
                   { label: '一般风险', value: '一般风险', children: [
-                    { label: '0.8<=x<1.1', value: '>=0.8&&<1.1' },
-                    { label: '0.9<=x<1.1', value: '>=0.9&&<1.1' }]
+                    { label: '0.8<=x<1.2', value: '>=0.8&&<1.2' },
+                    { label: '0.9<=x<1.2', value: '>=0.9&&<1.2' }]
                   },
                   { label: '高风险', value: '高风险', children: [
-                    { label: '>=1.1', value: '>=1.1' },
+                    { label: '>=1.2', value: '>=1.2' },
                     { label: '>=1.4', value: '>=1.4' }]
                   }
                 ]
@@ -394,18 +392,17 @@ export default {
           { pattern: /^rs\d{1,10}$/, message: 'rs +  1 到 10 个数字', trigger: 'blur' }
         ],
         effect_allele: [{ message: '请选择一个碱基', required: 'true', trigger: 'blur' }],
-        other_allele: [{ message: '请选择一个碱基', required: 'true', trigger: 'blur' }],
         normalFrequency: [
           { message: '值为小数，范围0~1', required: 'true', type: 'number', trigger: 'blur' },
-          { pattern: /0 | ^0\.\d{1,10}$/, message: '请输入0-1之间的小数', trigger: 'blur' }
+          { pattern: /0|^0\.\d{0,10}$/, message: '请输入小于1小数', trigger: 'blur' }
         ],
         hetFrequency: [
           { message: '值为小数，范围0~1', required: 'true', type: 'number', trigger: 'blur' },
-          { pattern: /0 | ^0\.\d{1,10}$/, message: '请输入0-1之间的小数', trigger: 'blur' }
+          { pattern: /0|^0\.\d{0,10}$/, message: '请输入小于1的小数', trigger: 'blur' }
         ],
         riskFrequency: [
           { message: '值为小数，范围0~1', required: 'true', type: 'number', trigger: 'blur' },
-          { pattern: /0 | ^0\.\d{1,10}$/, message: '请输入0-1之间的小数', trigger: 'blur' }
+          { pattern: /0|^0\.\d{0,10}$/, message: '请输入小于1的小数', trigger: 'blur' }
         ]
       }
     }

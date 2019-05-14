@@ -135,21 +135,39 @@ export default {
     },
     // 将每次的位点增加到位点表格中
     handleCreateSnps() {
-      const sitesTemp = Object.assign({}, this.$refs.siteform.FormInfo) // 将siteform的值赋值给siteTableList,给表格
-      sitesTemp.id = this.siteid
-      if (sitesTemp.effect_allele === 'alt') {
-        sitesTemp.effect_allele = sitesTemp.alt
-      } else {
-        sitesTemp.effect_allele = sitesTemp.ref
-      }
-      // sitesTemp.edit = false
-      this.siteid++
-      this.siteTableList.push(sitesTemp)
-      this.showValueForm = false
-      this.resetData(this.$refs.siteform.FormInfo) // 重置表单中的值
+      this.$nextTick(() => {
+        console.log(this.$refs.siteform)
+        this.$refs.siteform.$children[0].validate((valid) => {
+          if (valid) {
+            const sitesTemp = Object.assign({}, this.$refs.siteform.FormInfo) // 将siteform的值赋值给siteTableList,给表格
+            sitesTemp.id = this.siteid
+            if (sitesTemp.effect_allele === 'alt') {
+              sitesTemp.effect_allele = sitesTemp.alt
+            } else {
+              sitesTemp.effect_allele = sitesTemp.ref
+            }
+            // sitesTemp.edit = false
+            this.siteid++
+            this.siteTableList.push(sitesTemp)
+            this.showValueForm = false
+            this.resetData(this.$refs.siteform.FormInfo) // 重置表单中的值
+            this.$notify({
+              title: '成功',
+              message: '位点添加成功',
+              type: 'success'
+            })
+          } else {
+            this.$notify({
+              title: '失败',
+              message: '表单验证失败',
+              type: 'warning'
+            })
+          }
+        })
+      })
     },
     createData() {
-      const tempData = Object.assign({}, this.$refs.subelform.indicateForm) // subelform从获取数据, 中赋值到data
+      const tempData = Object.assign({}, this.InterpMainApp.subFormInfo) // subelform从获取数据, 中赋值到data
       tempData.site_result = []
       tempData.conclusion_result = []
       tempData.site_result = this.$refs.siteTable.tableData// 从inEditTable中获取数据,最终数据来自表格
@@ -168,8 +186,8 @@ export default {
       const tempData = Object.assign({}, this.$refs.subelform.indicateForm) // subelform从获取数据，中赋值到data
       tempData.site_result = this.$refs.siteTable.tableData // 传回后台的的是results值，需要重新赋值。从inEditTable中获取表格数据
       tempData.conclusion_result = this.$refs.conclustionTable.tableData
-      console.log(tempData)
       this.InterpMainApp.updateDataForm(JSON.stringify(tempData)).then(() => {
+        this.$emit('getlist')
         this.$emit('cancel') // 调用父组件的cancer方法
         this.$notify({
           title: '成功',
@@ -185,7 +203,7 @@ export default {
 </script>
 <style>
 .customWidth {
-  width: 60%;
+  width: 80%;
 }
 
 </style>

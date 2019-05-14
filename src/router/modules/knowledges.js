@@ -30,6 +30,12 @@ const knowledgesRouter = {
       component: () => import('@/views/svg-icons/index'),
       name: 'Mendelian',
       meta: { title: 'mendelian', icon: 'danjiyinyichuanbing', noCache: false }
+    },
+    {
+      path: 'products',
+      component: () => import('@/views/svg-icons/index'),
+      name: 'Productsaterial',
+      meta: { title: 'products_material', icon: 'danjiyinyichuanbing', noCache: false }
     }
   ]
 }

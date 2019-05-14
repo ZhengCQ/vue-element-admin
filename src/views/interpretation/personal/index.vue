@@ -7,10 +7,13 @@
                :getIndicate="gallPersonality"
                :createDataForm="paddPersonInterpretation"
                :updateDataForm="peditPersonInterpretation"
-               :siteEditColumns="siteEditColumns"
                :subConfig="subElConfig"
+               :conclusionFormInfo="conclusionFormInfo"
+               :conclusionConfig="conclusionConfig"
+               :conclustionColumns="conclustionColumns"
                :formData="formData"
                :siteFormInfo="siteFormInfo"
+               :siteEditColumns="siteEditColumns"
                :siteConfig="siteConfig"
                />
 </template>
@@ -36,49 +39,12 @@ export default {
   },
   data() {
     return {
-      siteEditColumns: [{
-        label: '位点rs号',
-        key: 'rs_name'
-      },
-      {
-        label: 'Gene',
-        key: 'gene'
-      },
-      {
-        label: 'Allele1',
-        key: 'allele1'
-      },
-      {
-        label: 'Allele2',
-        key: 'allele2'
-      },
-      {
-        label: 'Effect',
-        key: 'effect'
-      },
-      {
-        label: 'Mark',
-        key: 'mark'
-      },
-      {
-        label: '基因型频率',
-        key: 'Freq'
-      },
-      {
-        label: '文献',
-        key: 'reference',
-        width: '460px'
-      },
-      {
-        label: '操作',
-        key: 'operation'
-      }
-      ],
       // 主表单需要收集的form数据
       formData: {
         primary_name: '个性特质',
         secondary_name: '',
         indicate_name: '',
+        indicate_class: '',
         knowledge_name: ''
       },
       // 主表单动态表单的配置文件
@@ -110,6 +76,15 @@ export default {
             trigerFocus: false
           },
           {
+            name: 'indicate_class',
+            label: '指标类',
+            prop: 'indicate_class',
+            fieldType: 'autoComplete',
+            cols: 16,
+            querySearch: 'querySearchIndi',
+            trigerFocus: false
+          },
+          {
             name: 'knowledge_name',
             label: '素材选择',
             fieldType: 'autoComplete',
@@ -118,16 +93,103 @@ export default {
           }
         ]
       },
+      // 结论表单数据初始化
+      conclusionFormInfo: {
+        conclusion: '',
+        explanation: '',
+        evaluation_indicator: '',
+        interpretation_details: '',
+        suggest: ''
+      },
+      // 结论表单动态生成配置文件
+      conclusionConfig: {
+        fieldsConfig: [
+          {
+            name: 'conclusion',
+            label: '分类结论与评估',
+            placeholder: '风险等级和评估指标',
+            fieldType: 'CasCader',
+            options: [
+              {
+                label: '三级', value: '三级分类', children: [
+                  { label: '低风险', value: '低风险', children: [
+                    { label: '<0.8', value: '<0.8' },
+                    { label: '<0.9', value: '<0.9' }]
+                  },
+                  { label: '一般风险', value: '一般风险', children: [
+                    { label: '0.8<=x<1.1', value: '>=0.8&&<1.1' },
+                    { label: '0.9<=x<1.1', value: '>=0.9&&<1.1' }]
+                  },
+                  { label: '高风险', value: '高风险', children: [
+                    { label: '>=1.1', value: '>=1.1' },
+                    { label: '>=1.4', value: '>=1.4' }]
+                  }
+                ]
+              },
+              {
+                label: '五级', value: '五级分类', children: [
+                  { label: '低风险', value: '低风险', children: [
+                    { label: '<0.8', value: '<0.8' },
+                    { label: '<0.9', value: '<0.9' }]
+                  },
+                  { label: '一般风险', value: '一般风险', children: [
+                    { label: '0.8<=x<1.1', value: '>=0.8&&<1.1' },
+                    { label: '0.9<=x<1.1', value: '>=0.9&&<1.1' }]
+                  },
+                  { label: '稍高风险', value: '稍高风险', children: [
+                    { label: '1.1<=x<1.4', value: '>=1.1&&<1.4' }]
+                  },
+                  { label: '高风险', value: '高风险', children: [
+                    { label: '>=1.1', value: '>=1.1' },
+                    { label: '>=1.4', value: '>=1.4' }]
+                  },
+                  { label: '极高风险', value: '极高风险', children: [
+                    { label: '>=2', value: '>=2' }]
+                  }
+                ]
+              }
+            ],
+            cols: 20
+          }
+        ]
+      },
+      // 位点可编辑表格的动态配置
+      conclustionColumns: [{
+        label: '结论',
+        key: 'conclusion'
+      },
+      {
+        label: '结论说明',
+        key: 'explanation',
+        width: '200px'
+      },
+      {
+        label: '评估指标',
+        key: 'evaluation_indicator'
+      },
+      {
+        label: '解读详情',
+        key: 'interpretation_details',
+        width: '250px'
+      },
+      {
+        label: '建议对策',
+        key: 'suggest',
+        width: '300px'
+      }],
+      // 位点表单数据初始化
       siteFormInfo: {
         rs_name: '',
         gene: '',
-        allele1: '',
-        allele2: '',
+        ref: '',
+        alt: '',
+        genotype: '',
         effect: '',
         mark: '',
         Freq: '',
         edit: false
       },
+      // 位点表单动态配置
       siteConfig: {
         fieldsConfig: [
           {
@@ -146,8 +208,14 @@ export default {
             cols: 12
           },
           {
-            name: 'allele1',
-            label: '碱基1',
+            name: 'ref',
+            label: '参考碱基',
+            fieldType: 'TextInput',
+            cols: 12
+          },
+          {
+            name: 'alt',
+            label: '突变碱基',
             fieldType: 'SelectList',
             options: [
               { label: 'A', value: 'A' },
@@ -158,14 +226,13 @@ export default {
             cols: 12
           },
           {
-            name: 'allele2',
-            label: '碱基2',
+            name: 'genotype',
+            label: '基因型',
             fieldType: 'SelectList',
             options: [
-              { label: 'A', value: 'A' },
-              { label: 'T', value: 'T' },
-              { label: 'C', value: 'C' },
-              { label: 'G', value: 'G' }
+              { label: 'ref_hom', value: 'ref_hom' },
+              { label: 'alt_hom', value: 'alt_hom' },
+              { label: 'alt_ref', value: 'alt_ref' }
             ],
             cols: 12
           },
@@ -191,7 +258,50 @@ export default {
             cols: 12
           }
         ]
+      },
+      // 位点可编辑表格配置
+      siteEditColumns: [{
+        label: '位点rs号',
+        key: 'rs_name'
+      },
+      {
+        label: '基因名称',
+        key: 'gene'
+      },
+      {
+        label: '参考碱基',
+        key: 'ref'
+      },
+      {
+        label: '突变碱基',
+        key: 'alt'
+      },
+      {
+        label: '基因型',
+        key: 'genotype'
+      },
+      {
+        label: 'Effect',
+        key: 'effect'
+      },
+      {
+        label: 'Mark',
+        key: 'mark'
+      },
+      {
+        label: '基因型频率',
+        key: 'Freq'
+      },
+      {
+        label: '文献',
+        key: 'reference',
+        width: '460px'
+      },
+      {
+        label: '操作',
+        key: 'operation'
       }
+      ]
     }
   }
 }

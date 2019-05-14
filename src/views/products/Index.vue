@@ -70,7 +70,8 @@
                  :dialogFormInfo="dialogFormInfo"
                  :statusOptions="statusOptions"
                  :treeFormData="treeFormData"
-                 @cancel="dialogVisible = false;getList()" />
+                 @getlist = "getList()"
+                 @cancel="dialogVisible = false;" />
     <!--新增编辑表单 结束-->
     <!--产品详情表单 开始-->
     <el-dialog :visible.sync="dialogPvVisible" title="产品详情">
@@ -166,6 +167,9 @@ export default {
       this.listLoading = true
       glistProduct(this.listQuery).then(response => {
         this.productsList = response.data.results
+        for (const i of this.productsList) {
+          i.id = (Array(4).join('0') + i.id).slice(-4) // 得到特定长度
+        }
         this.total = response.data.total
         // Just to simulate the time of the request
         setTimeout(() => {
@@ -179,9 +183,7 @@ export default {
     },
     handleFetchItems(row) {
       this.dialogPvVisible = true
-      console.log(row)
       this.treeFormData = JSON.parse(row.front_end_json)
-      console.log(this.treeFormData)
     },
     resetTemp() {
       this.dialogFormInfo = {
@@ -201,7 +203,6 @@ export default {
     handleUpdate(row) {
       this.resetTemp()
       this.dialogFormInfo = Object.assign({}, row) // copy obj
-      console.log(row)
       this.treeFormData = JSON.parse(row.front_end_json)
       this.dialogStatus = 'update'
       this.dialogVisible = true

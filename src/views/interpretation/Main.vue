@@ -7,34 +7,41 @@
     <!--新增 结束-->
     <!--数据列表上方 结束-->
     <!--数据列表表单 开始-->
-    <el-table v-loading="listLoading" :key="tableKey" :data="tableList" border fit highlight-current-row style="width: 100%;" @sort-change="sortChange">
+    <el-table v-loading="listLoading" :data="tableList" border fit highlight-current-row style="width: 100%;" @sort-change="sortChange">
       <el-table-column type="index" label="No." width="70px" align="center" />
-      <el-table-column :label="$t('table.disease_code')" prop="product_class" align="center" width="160px" sortable>
+      <el-table-column :label="$t('table.disease_code')" prop="product_class" align="center" width="120px" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.indicate_name')" prop="indicate_name" align="center" width="160px" sortable>
+      <el-table-column :label="$t('table.indicate_name')" prop="indicate_name" align="center" width="120px" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.indicate_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.indicate_class')" prop="indicate_class" align="center" width="160px" sortable>
+      <el-table-column :label="$t('table.indicate_class')" prop="indicate_class" align="center" width="120px" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.indicate_class }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.primary_name')" prop="primary_name" align="center" width="160px" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.primary_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.secondary_name')" prop="secondary_name" align="center" width="160px" sortable>
+      <el-table-column :label="$t('table.secondary_name')" prop="secondary_name" align="center" width="120px" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.secondary_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="320px" class-name="small-padding fixed-width">
+      <!--el-table-column :label="$t('table.primary_name')" prop="primary_name" align="center" width="160px" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.primary_name }}</span>
+        </template>
+      </el-table-column-->
+      <el-table-column :label="$t('table.indicate_detail')" align="center" width="300px" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <el-button type="info" plain size="medium" @click="showConclustionDetail(scope.row)">{{ $t('table.conclustion_detail') }}</el-button>
+          <el-button type="info" plain size="medium" @click="showSiteDetail(scope.row)">{{ $t('table.site_detail') }}</el-button>
+        </template>
+      </el-table-column>
+
+      <el-table-column :label="$t('table.actions')" align="center" width="200px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('table.edit') }}</el-button>
           <el-button v-if="scope.row.status!='deleted'" size="mini" type="danger" @click="handleDelete(scope.row)">{{ $t('table.delete') }}
@@ -43,22 +50,34 @@
       </el-table-column>
     </el-table>
     <!--数据列表表单 结束-->
+
     <!--页码 开始-->
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.page_size" @pagination="getList" />
     <!--页码 结束-->
+    <!--dialog表格开始-->
+    <dialog-table
+        :title="diaTitle"
+        :dialogTableVisible="dialogTableVisible"
+        :tableData="diaTableData"
+        :tableKey="diaTableKey"
+        @cancel="resetDialogTable()"
+      >
+    </dialog-table>
+    <!--dialog表格结束-->
     <!--新增编辑表单 开始-->
-    <addEditForm ref="addEditForm" :dialogStatus="dialogStatus" :siteEditForm="siteEditForm" :conclustionEditForm="conclustionEditForm" :dialogFormVisible="dialogVisible"  @cancel="resetDialog()"></addEditForm>
+    <addEditForm ref="addEditForm" :dialogStatus="dialogStatus" :siteEditForm="siteEditForm" :conclustionEditForm="conclustionEditForm" :dialogFormVisible="dialogVisible"  @getlist="getList()" @cancel="resetDialog()"></addEditForm>
     <!--新增编辑表单 结束-->
   </div>
 </template>
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import addEditForm from './Form/Form'
+import DialogTable from './dialogTable'
 import UploadExcelComponent from '@/components/UploadExcel/index.vue'
 
 export default {
   name: 'InterpMainTable',
-  components: { addEditForm, Pagination, UploadExcelComponent },
+  components: { addEditForm, Pagination, UploadExcelComponent, DialogTable },
   props: {
     fetchList: {
       type: Function,
@@ -77,10 +96,6 @@ export default {
       default: null
     },
     getIndicate: {
-      type: Function,
-      default: null
-    },
-    glistKnowlege: {
       type: Function,
       default: null
     },
@@ -127,7 +142,10 @@ export default {
   },
   data() {
     return {
-      tableKey: 0,
+      diaTableKey: [],
+      diaTableData: [],
+      dialogTableVisible: false,
+      diaTitle: '',
       tableList: null,
       total: 0,
       listLoading: true,
@@ -155,7 +173,7 @@ export default {
       this.fetchList(this.listQuery).then(response => {
         this.tableList = response.data.results
         for (const i of this.tableList) {
-          i.disease_code = (Array(4).join('0') + i.disease_code).slice(-4) // 得到特定长度
+          i.id = (Array(4).join('0') + i.id).slice(-4) // 得到特定长度
           // i.disease_code = i.primary_code + i.disease_code // 更替disase_code
         }
         this.total = response.data.total
@@ -193,11 +211,34 @@ export default {
       }
       this.handleFilter()
     },
+    showConclustionDetail(row) {
+      this.dialogFormInfo = Object.assign({}, row) // copy obj
+      this.diaTitle = this.dialogFormInfo.indicate_name + '结论评估详情'
+      this.dialogTableVisible = true
+      this.diaTableData = JSON.parse(this.dialogFormInfo.conclusion_result)
+      this.diaTableKey = this.conclustionColumns
+    },
+    showSiteDetail(row) {
+      this.dialogFormInfo = Object.assign({}, row) // copy obj
+      this.diaTitle = this.dialogFormInfo.indicate_name + '位点详情'
+      this.dialogTableVisible = true
+      this.diaTableData = JSON.parse(this.dialogFormInfo.site_result)
+      this.diaTableKey = this.siteEditColumns
+    },
+    resetDialogTable() {
+      this.dialogTableVisible = false
+    },
     resetDialog() {
       this.dialogVisible = false // dialog关闭
+      // this.$refs.addEditForm.resetTable() // 调用Form中的重置数据 ，重置table可编辑表单
+      // this.subFormInfo = this.formData // 调用index传递过来的formData 重置表单
+      // this.getList()
       this.$refs.addEditForm.resetTable() // 调用Form中的重置数据 ，重置table可编辑表单
-      this.subFormInfo = this.formData // 调用index传递过来的formData 重置表单
-      this.getList()
+      for (var name in this.subFormInfo) {
+        if (name !== 'primary_name') {
+          this.subFormInfo[name] = ''
+        }
+      }
     },
     handleCreate() {
       this.dialogStatus = 'create'
@@ -209,7 +250,6 @@ export default {
         this.subFormInfo[name] = this.dialogFormInfo[name]
       }
       this.subFormInfo.id = this.dialogFormInfo.id
-      console.log(this.dialogFormInfo)
       this.siteEditForm = JSON.parse(this.dialogFormInfo.site_result)
       this.conclustionEditForm = JSON.parse(this.dialogFormInfo.conclusion_result)
       this.dialogStatus = 'update'
