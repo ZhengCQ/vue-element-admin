@@ -10,6 +10,7 @@
 <script type="text/javascript">
 import FormGenerator from '@/components/Form/FormGenerator'
 import transQueryList from '@/utils/utils'
+import { glistKnowlege } from '@/api/interpretation/common'
 export default {
   name: 'SubElForm',
   components: { FormGenerator },
@@ -57,7 +58,7 @@ export default {
       const primary_name = this.indicateForm.primary_name
       const knowledge_name = this.indicateForm.knowledge_name
       // 需要一级分类和知识素材名称
-      var itemData = await this.InterpMainApp.glistKnowlege(primary_name, knowledge_name)
+      var itemData = await glistKnowlege(primary_name, knowledge_name)
       itemData = itemData.data.result
       const list = transQueryList(queryString, itemData)
       callback(list)

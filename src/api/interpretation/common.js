@@ -15,3 +15,11 @@ export function gfindSiteDetail(rs_name) {
     params: { rs_name }
   })
 }
+
+export function glistKnowlege(primary_name, knowlege_name) {
+  return request({
+    url: '/product/list_knowlege',
+    method: 'get',
+    params: { primary_name, knowlege_name }
+  })
+}

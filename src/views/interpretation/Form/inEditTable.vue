@@ -1,10 +1,36 @@
 <template>
   <el-table :data="tableData" border fit highlight-current-row style="width: 100%">
-    <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" :align="item.align || 'center'">
+    <el-table-column
+                v-for="item in columns"
+                v-if="item.type === 'img'"
+                :key="item.key"
+                :label="item.label"
+                :width="item.width"
+                :align="item.align || 'center'">
+      <template slot-scope="scope">
+        <el-tooltip class="item" effect="dark" content="点击预览" placement="top-start" v-if="scope.row[item.alt]">
+          <img
+               class="table-picture"
+               :src="scope.row[item.alt]"
+               :alt="`${scope.row.name}`"
+               @click="previewLogo(scope.row[item.alt])">
+              </el-tooltip>
+          <span v-else>无</span>
+      </template>
+    </el-table-column>
+    <el-table-column
+              v-else
+              :key="item.key"
+              :label="item.label"
+              :width="item.width"
+              :align="item.align || 'center'">
       <template slot-scope="scope">
         <slot :scope="scope" :name="item.key">
-          <template v-if="scope.row.edit">
-            <el-input v-model="scope.row[item.key]" size="small" />
+          <template
+              v-if="scope.row.edit">
+            <el-input
+              v-model="scope.row[item.key]"
+              size="small" />
           </template>
           <span v-else>{{ scope.row[item.key] }}</span>
         </slot>
@@ -60,4 +86,13 @@ export default {
     }
   }
 }
+
 </script>
+<style lang="scss">
+.table-picture {
+  width: 80px;
+  height: 80px;
+  border-radius: 3px;
+}
+
+</style>

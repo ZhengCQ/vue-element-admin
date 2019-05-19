@@ -96,7 +96,9 @@ export default {
         explanation: '',
         evaluation_indicator: '',
         interpretation_details: '',
-        suggest: ''
+        suggest: '',
+        image_path: '',
+        riskimage: ''
       },
       // 结论表单动态生成配置文件
       conclusionConfig: {
@@ -109,7 +111,7 @@ export default {
             options: [
               {
                 label: '三级', value: '三级分类', children: [
-                  { label: '低风险', value: '低风险', children: [
+                  { label: '较低风险', value: '较低风险', children: [
                     { label: '<0.8', value: '<0.8' },
                     { label: '<0.9', value: '<0.9' }]
                   },
@@ -117,7 +119,7 @@ export default {
                     { label: '0.8<=x<1.2', value: '>=0.8&&<1.2' },
                     { label: '0.9<=x<1.2', value: '>=0.9&&<1.2' }]
                   },
-                  { label: '高风险', value: '高风险', children: [
+                  { label: '较高风险', value: '较高风险', children: [
                     { label: '>=1.2', value: '>=1.2' },
                     { label: '>=1.4', value: '>=1.4' }]
                   }
@@ -125,7 +127,7 @@ export default {
               },
               {
                 label: '五级', value: '五级分类', children: [
-                  { label: '低风险', value: '低风险', children: [
+                  { label: '较低风险', value: '较低风险', children: [
                     { label: '<0.8', value: '<0.8' },
                     { label: '<0.9', value: '<0.9' }]
                   },
@@ -136,7 +138,7 @@ export default {
                   { label: '稍高风险', value: '稍高风险', children: [
                     { label: '1.1<=x<1.4', value: '>=1.1&&<1.4' }]
                   },
-                  { label: '高风险', value: '高风险', children: [
+                  { label: '较高风险', value: '较高风险', children: [
                     { label: '>=1.1', value: '>=1.1' },
                     { label: '>=1.4', value: '>=1.4' }]
                   },
@@ -147,13 +149,37 @@ export default {
               }
             ],
             cols: 20
+          },
+          {
+            name: 'riskimage',
+            label: '风险图片',
+            placeholder: '请选择图片或上传',
+            fieldType: 'SelectList',
+            options: [
+              { label: '图片类型1', value: '/static/Images/CommonDisease/Detail' },
+              { label: '图片类型2', value: '/static/Images/CommonDisease/Detail-ClientSpecific' }
+            ],
+            cols: 12
+
           }
         ]
       },
       // 位点可编辑表格的动态配置
       conclustionColumns: [{
-        label: '结论',
+        label: '结论概况',
         key: 'conclusion'
+      },
+      {
+        label: '图片路径',
+        key: 'image_path',
+        width: '250px'
+      },
+      {
+        label: '图片预览',
+        key: 'image_preview',
+        alt: 'image_path', //  预览图片的路径
+        type: 'img',
+        width: '90px'
       },
       {
         label: '结论说明',
@@ -172,7 +198,7 @@ export default {
       {
         label: '建议对策',
         key: 'suggest',
-        width: '300px'
+        width: '450px'
       }],
       // 位点表单数据初始化
       siteFormInfo: {
@@ -281,27 +307,6 @@ export default {
             cols: 12
           },
           {
-            name: 'beta',
-            label: 'Beta值',
-            placeholder: '整数或小数',
-            fieldType: 'NumInput',
-            cols: 8
-          },
-          {
-            name: 'CI',
-            label: 'CI值',
-            placeholder: '整数或小数',
-            fieldType: 'NumInput',
-            cols: 8
-          },
-          {
-            name: 'p_value',
-            label: 'p_value',
-            placeholder: '小数0~1',
-            fieldType: 'NumInput',
-            cols: 8
-          },
-          {
             name: 'normalFrequency',
             label: '正常基因型人群频率',
             prop: 'normalFrequency',
@@ -351,18 +356,6 @@ export default {
       {
         label: 'OR值',
         key: 'jb_or'
-      },
-      {
-        label: 'Beta',
-        key: 'beta'
-      },
-      {
-        label: 'CI值',
-        key: 'CI'
-      },
-      {
-        label: 'Pvalue',
-        key: 'p_value'
       },
       {
         label: '正常基因型人群频率',

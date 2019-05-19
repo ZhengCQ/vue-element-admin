@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
-export function glistdisease(query) {
+export function glistIndicateClass(query) {
   return request({
-    url: '/disease/list_disease',
+    url: '/disease/list_indicate_class',
     method: 'get',
     params: query
   })
@@ -53,37 +53,5 @@ export function gdeleteDisease(id) {
     url: '/disease/delete_disease',
     method: 'get',
     params: id
-  })
-}
-
-export function gfindRsName(rsName) {
-  return request({
-    url: '/query/find_rs_name',
-    method: 'get',
-    params: { rsName }
-  })
-}
-
-export function gfindSiteDetail(rsName) {
-  return request({
-    url: '/query/rs_site_detail',
-    method: 'get',
-    params: { rsName }
-  })
-}
-
-export function precieveData(upload) {
-  return request({
-    url: '/product/recieve_data',
-    method: 'post',
-    params: { upload }
-  })
-}
-
-export function puploadImage(formdata) {
-  return request({
-    url: '/disease/upload_image',
-    method: 'post',
-    params: { formdata }
   })
 }

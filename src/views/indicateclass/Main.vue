@@ -3,20 +3,35 @@
     <!--数据列表上方 开始-->
     <!--新增 开始-->
     <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
-    <upload-excel-component :on-success="handleSuccess" :before-upload="beforeUpload"/>
     <!--新增 结束-->
     <!--数据列表上方 结束-->
     <!--数据列表表单 开始-->
     <el-table v-loading="listLoading" :data="tableList" border fit highlight-current-row style="width: 100%;" @sort-change="sortChange">
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-position="left" inline class="demo-table-expand">
+            <el-form-item :label="$t('table.disease_profile')">
+              <span>{{ props.row.disease_profile }}</span>
+            </el-form-item>
+            <el-form-item :label="$t('table.risk_factor')">
+              <span>{{ props.row.risk_factor }}</span>
+            </el-form-item>
+            <el-form-item :label="$t('table.early_symptoms')">
+              <span>{{ props.row.early_symptoms }}</span>
+            </el-form-item>
+            <el-form-item :label="$t('table.privention_advice')">
+              <span>{{ props.row.privention_advice }}</span>
+            </el-form-item>
+            <el-form-item :label="$t('table.medical_examination_instructions')">
+              <span>{{ props.row.medical_examination_instructions }}</span>
+            </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
       <el-table-column type="index" label="No." width="70px" align="center" />
       <el-table-column :label="$t('table.disease_code')" prop="product_class" align="center" width="120px" sortable>
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.indicate_name')" prop="indicate_name" align="center" width="120px" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.indicate_name }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.indicate_class')" prop="indicate_class" align="center" width="120px" sortable>
@@ -29,18 +44,41 @@
           <span>{{ scope.row.secondary_name }}</span>
         </template>
       </el-table-column>
-      <!--el-table-column :label="$t('table.primary_name')" prop="primary_name" align="center" width="160px" sortable>
+      <el-table-column :label="$t('table.female_incidence')" prop="secondary_name" align="center" width="120px" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.primary_name }}</span>
-        </template>
-      </el-table-column-->
-      <el-table-column :label="$t('table.indicate_detail')" align="center" width="300px" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button type="info" plain size="medium" @click="showConclustionDetail(scope.row)">{{ $t('table.conclustion_detail') }}</el-button>
-          <el-button type="info" plain size="medium" @click="showSiteDetail(scope.row)">{{ $t('table.site_detail') }}</el-button>
+          <span>{{ scope.row.female_incidence }}</span>
         </template>
       </el-table-column>
-
+      <el-table-column :label="$t('table.male_incidence')" prop="secondary_name" align="center" width="120px" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.male_incidence }}</span>
+        </template>
+      </el-table-column>
+       <el-table-column show-overflow-tooltip :label="$t('table.disease_profile')" prop="secondary_name" align="center" width="120px" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.disease_profile }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column show-overflow-tooltip :label="$t('table.risk_factor')" prop="secondary_name" align="center" width="120px" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.risk_factor }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column show-overflow-tooltip :label="$t('table.early_symptoms')" prop="secondary_name" align="center" width="120px" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.early_symptoms }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column show-overflow-tooltip :label="$t('table.privention_advice')" prop="secondary_name" align="center" width="120px" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.privention_advice }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column show-overflow-tooltip :label="$t('table.medical_examination_instructions')" prop="secondary_name" align="center" width="120px" sortable>
+        <template slot-scope="scope">
+          <span>{{ scope.row.medical_examination_instructions }}</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('table.actions')" align="center" width="200px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('table.edit') }}</el-button>
@@ -54,30 +92,14 @@
     <!--页码 开始-->
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.page_size" @pagination="getList" />
     <!--页码 结束-->
-    <!--dialog表格开始-->
-    <dialog-table
-        :title="diaTitle"
-        :dialogTableVisible="dialogTableVisible"
-        :tableData="diaTableData"
-        :tableKey="diaTableKey"
-        @cancel="resetDialogTable()"
-      >
-    </dialog-table>
-    <!--dialog表格结束-->
-    <!--新增编辑表单 开始-->
-    <addEditForm ref="addEditForm" :dialogStatus="dialogStatus" :siteEditForm="siteEditForm" :conclustionEditForm="conclustionEditForm" :dialogFormVisible="dialogVisible"  @getlist="getList()" @cancel="resetDialog()"></addEditForm>
-    <!--新增编辑表单 结束-->
   </div>
 </template>
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
-import addEditForm from './Form/Form'
-import DialogTable from './dialogTable'
-import UploadExcelComponent from '@/components/UploadExcel/index.vue'
 
 export default {
   name: 'InterpMainTable',
-  components: { addEditForm, Pagination, UploadExcelComponent, DialogTable },
+  components: { Pagination },
   props: {
     fetchList: {
       type: Function,
@@ -106,33 +128,6 @@ export default {
     updateDataForm: {
       type: Function,
       default: null
-    },
-    siteEditColumns: {
-      type: Array
-    },
-    conclustionColumns: {
-      type: Array
-    },
-    subConfig: {
-      type: Object
-    },
-    formData: {
-      type: Object
-    },
-    siteConfig: {
-      type: Object
-    },
-    siteFormInfo: {
-      type: Object
-    },
-    conclusionFormInfo: {
-      type: Object
-    },
-    conclusionConfig: {
-      type: Object
-    },
-    rules: {
-      type: Object
     }
   },
   provide() {
@@ -159,9 +154,7 @@ export default {
       },
       subFormInfo: this.formData,
       dialogVisible: false,
-      dialogStatus: '',
-      siteEditForm: [],
-      conclustionEditForm: []
+      dialogStatus: ''
     }
   },
   created() {
@@ -171,6 +164,7 @@ export default {
     getList() {
       this.listLoading = true
       this.fetchList(this.listQuery).then(response => {
+        console.log(response.data)
         this.tableList = response.data.results
         for (const i of this.tableList) {
           i.id = (Array(4).join('0') + i.id).slice(-4) // 得到特定长度
@@ -211,20 +205,6 @@ export default {
       }
       this.handleFilter()
     },
-    showConclustionDetail(row) {
-      this.dialogFormInfo = Object.assign({}, row) // copy obj
-      this.diaTitle = this.dialogFormInfo.indicate_name + '结论评估详情'
-      this.dialogTableVisible = true
-      this.diaTableData = JSON.parse(this.dialogFormInfo.conclusion_result)
-      this.diaTableKey = this.conclustionColumns
-    },
-    showSiteDetail(row) {
-      this.dialogFormInfo = Object.assign({}, row) // copy obj
-      this.diaTitle = this.dialogFormInfo.indicate_name + '位点详情'
-      this.dialogTableVisible = true
-      this.diaTableData = JSON.parse(this.dialogFormInfo.site_result)
-      this.diaTableKey = this.siteEditColumns
-    },
     resetDialogTable() {
       this.dialogTableVisible = false
     },
@@ -255,51 +235,24 @@ export default {
       this.conclustionEditForm = JSON.parse(this.dialogFormInfo.conclusion_result)
       this.dialogStatus = 'update'
       this.dialogVisible = true
-    },
-    // 上传方法
-    beforeUpload(file) {
-      const isLt1M = file.size / 1024 / 1024 < 1
-
-      if (isLt1M) {
-        return true
-      }
-
-      this.$message({
-        message: 'Please do not upload files larger than 1m in size.',
-        type: 'warning'
-      })
-      return false
-    },
-    handleSuccess({ results, header }) {
-      const upload = { upload: results }
-      console.log(JSON.stringify(upload))
-      /* for (const i = 0;i <= results.length;i++){
-        row = results[i]
-        row.secondary_name
-        var item = {}
-        item.gene = row.gene
-        item.effect_allele = row.effect_allele
-        item.other_allele = row.other_allele
-        item.jb_or = row.jb_or
-        item.beta = row.beta
-        item.CI = row.CI
-        item.p_value = row.p_value
-        item.reference = row.reference
-        item.homeRefFrequency = row.homeRefFrequency
-        item.hetFrequency = row.hetFrequency
-        item.homAltFrequency = row.homAltFrequency
-      } */
-      /* recieveData(JSON.stringify(upload)).then(() => {
-        this.$emit('cancel') // 调用父组件的cancer方法
-        this.$notify({
-          title: '成功',
-          message: '创建成功',
-          type: 'success',
-          duration: 2000
-        })
-      })*/
     }
   }
 }
 
 </script>
+
+ <style>
+  .demo-table-expand {
+    font-size: 0;
+  }
+  .demo-table-expand label {
+    width: 90px;
+    color: #99a9bf;
+  }
+  .demo-table-expand .el-form-item {
+    white-space: pre-wrap;
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 100%;
+  }
+ </style>

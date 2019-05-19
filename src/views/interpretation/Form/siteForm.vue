@@ -46,25 +46,14 @@ export default {
   computed: {
     rs_name() {
       return this.FormInfo.rs_name
-    },
-    alt() {
-      return this.FormInfo.alt
-    },
-    ref() {
-      return this.FormInfo.ref
     }
   },
   watch: {
     rs_name(newValue, oldValue) {
-      this.queryRsDetail(newValue)
-    },
-    alt(newValue, oldValue) {
-      console.log(newValue)
-      console.log(oldValue)
-    },
-    ref(newValue, oldValue) {
-      console.log(newValue)
-      console.log(oldValue)
+      // 值变化并有值时候，调用查询rs详情
+      if (newValue) {
+        this.queryRsDetail(newValue)
+      }
     }
   },
   methods: {
@@ -79,8 +68,8 @@ export default {
     async queryRsDetail(rs_name) {
       var itemData = await gfindSiteDetail(rs_name)
       var altArray = []
+
       console.log(itemData.data.result)
-      console.log(this.FormInfo)
       this.FormInfo.gene = itemData.data.result[0].gene
       this.FormInfo.ref = itemData.data.result[0].ref
       // alt 有多个，当alt不为空的时候，将alt存为数组，输出到alt的options共选择

@@ -13,6 +13,7 @@ import Layout from '@/views/layout/Layout'
 // import nestedRouter from './modules/nested'
 import knowledgesRouter from './modules/knowledges'
 import interpretationRouter from './modules/interpretation'
+import indicateclassRouter from './modules/indicateclass'
 
 /** note: Submenu only appear when children.length>=1
  *  detail see  https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -111,8 +112,26 @@ export const asyncRouterMap = [
       }
     ]
   },
+  indicateclassRouter,
   interpretationRouter,
-  knowledgesRouter
+  knowledgesRouter,
+  {
+    path: '/components',
+    component: Layout,
+    redirect: 'noredirect',
+    name: 'ComponentDemo',
+    meta: {
+      title: 'components',
+      icon: 'component'
+    },
+    children: [{
+      path: 'avatar-upload',
+      component: () => import('@/views/components-demo/avatarUpload'),
+      name: 'AvatarUploadDemo',
+      meta: { title: 'avatarUpload' }
+    }]
+  }
+
   /** When your routing table is too long, you can split it into small modules**/
   // componentsRouter,
   // chartsRouter,
