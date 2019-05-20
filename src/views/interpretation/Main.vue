@@ -216,6 +216,11 @@ export default {
       this.diaTitle = this.dialogFormInfo.indicate_name + '结论评估详情'
       this.dialogTableVisible = true
       this.diaTableData = JSON.parse(this.dialogFormInfo.conclusion_result)
+      this.diaTableData.forEach((item, index) => {
+        if (!item.image_path.match(this.COMMON.webUrl)) {
+          this.diaTableData[index].image_path = this.diaTableData[index].image_path = this.COMMON.webUrl + '/' + item.image_path
+        }
+      })
       this.diaTableKey = this.conclustionColumns
     },
     showSiteDetail(row) {
@@ -227,6 +232,7 @@ export default {
     },
     resetDialogTable() {
       this.dialogTableVisible = false
+      this.diaTableData = []
     },
     resetDialog() {
       this.dialogVisible = false // dialog关闭
@@ -249,7 +255,6 @@ export default {
       for (var name in this.subFormInfo) {
         this.subFormInfo[name] = this.dialogFormInfo[name]
       }
-      console.log(this.dialogFormInfo)
       this.subFormInfo.id = this.dialogFormInfo.id
       this.siteEditForm = JSON.parse(this.dialogFormInfo.site_result)
       this.conclustionEditForm = JSON.parse(this.dialogFormInfo.conclusion_result)

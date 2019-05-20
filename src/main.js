@@ -40,3 +40,6 @@ new Vue({
   i18n,
   render: h => h(App)
 })
+
+import global from './common.vue'
+Vue.prototype.COMMON = global

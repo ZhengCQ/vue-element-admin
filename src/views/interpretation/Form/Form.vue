@@ -98,6 +98,11 @@ export default {
       this.siteTableList = val
     },
     conclustionEditForm(val) {
+      val.forEach((item, index) => {
+        if (!item.image_path.match(this.COMMON.webUrl)) {
+          val[index].image_path = val[index].image_path = this.COMMON.webUrl + '/' + item.image_path
+        }
+      })
       this.conclustionTableList = val
     }
   },
@@ -126,7 +131,9 @@ export default {
       const concluTemp = Object.assign({}, this.$refs.conclusionform.FormInfo) // 将siteform的值赋值给siteTableList,给表格
       concluTemp.evaluation_indicator = concluTemp.conclusion[2]
       concluTemp.conclusion = concluTemp.conclusion[1]
-      concluTemp.id = this.conid // id赋值，便于删除
+      concluTemp.id = this.conid // id赋值, 便于删除
+      concluTemp.tempid = this.conid //
+
       // concluTemp.edit = false // 可编辑表单
       this.conid++
       this.conclustionTableList.push(concluTemp)
@@ -140,7 +147,8 @@ export default {
         this.$refs.siteform.$children[0].validate((valid) => {
           if (valid) {
             const sitesTemp = Object.assign({}, this.$refs.siteform.FormInfo) // 将siteform的值赋值给siteTableList,给表格
-            sitesTemp.id = this.siteid
+            // sitesTemp.id = this.siteid
+            sitesTemp.tempid = this.siteid
             if (sitesTemp.effect_allele === 'alt') {
               sitesTemp.effect_allele = sitesTemp.alt
             } else {
@@ -166,12 +174,23 @@ export default {
         })
       })
     },
+    pre_conclustionTable(tableData) {
+      tableData.forEach((item, index) => {
+        if (item.id === item.tempid) {
+          tableData[index].id = 0 // 表示是新加的，需要重新分配ID
+        }
+        if (item.image_path.match(this.COMMON.webUrl)) {
+          tableData[index].image_path = item.image_path.replace(this.COMMON.webUrl + '/', '')
+        }
+      })
+    },
     createData() {
-      const tempData = Object.assign({}, this.InterpMainApp.subFormInfo) // subelform从获取数据, 中赋值到data
+      var tempData = Object.assign({}, this.InterpMainApp.subFormInfo) // subelform从获取数据, 中赋值到data
       tempData.site_result = []
       tempData.conclusion_result = []
       tempData.site_result = this.$refs.siteTable.tableData// 从inEditTable中获取数据,最终数据来自表格
       tempData.conclusion_result = this.$refs.conclustionTable.tableData
+      this.pre_conclustionTable(tempData.conclusion_result)
       this.InterpMainApp.createDataForm(JSON.stringify(tempData)).then(() => {
         this.$emit('cancel') // 调用父组件的cancer方法
         this.$notify({
@@ -183,9 +202,11 @@ export default {
       })
     },
     updateData() {
-      const tempData = Object.assign({}, this.$refs.subelform.indicateForm) // subelform从获取数据，中赋值到data
+      var tempData = Object.assign({}, this.$refs.subelform.indicateForm) // subelform从获取数据，中赋值到data
       tempData.site_result = this.$refs.siteTable.tableData // 传回后台的的是results值，需要重新赋值。从inEditTable中获取表格数据
       tempData.conclusion_result = this.$refs.conclustionTable.tableData
+      console.log(tempData.conclusion_result)
+      this.pre_conclustionTable(tempData.conclusion_result)
       this.InterpMainApp.updateDataForm(JSON.stringify(tempData)).then(() => {
         this.$emit('getlist')
         this.$emit('cancel') // 调用父组件的cancer方法

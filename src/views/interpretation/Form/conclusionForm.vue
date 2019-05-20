@@ -33,7 +33,6 @@
 <script type="text/javascript">
 import axios from 'axios'
 import FormGenerator from '@/components/Form/FormGenerator'
-import apiConfig from '../../../../config/upload.js'
 export default {
   name: 'ConclusionForm',
   components: { FormGenerator },
@@ -43,7 +42,7 @@ export default {
       config: this.InterpMainApp.conclusionConfig,
       FormInfo: this.InterpMainApp.conclusionFormInfo,
       rules: this.InterpMainApp.rules,
-      UploadBaseURL: apiConfig.baseUrl + apiConfig.api_upload,
+      UploadBaseURL: this.COMMON.baseUrl + this.COMMON.api_upload,
       imgsrc: ''
     }
   },
@@ -58,16 +57,19 @@ export default {
     }
   },
   watch: {
-    riskimage(newValue, oldValue) {
-      var imge_abs_path = apiConfig.webUrl + '/' + newValue + '/' + this.FormInfo.conclusion[1]
-      imge_abs_path = imge_abs_path + '.jpg' // 需要判断远程是jpg或者是png
-      this.$set(this.FormInfo, 'image_path', imge_abs_path)
+    riskimage(newValue) {
+      if (newValue !== null) {
+        console.log(newValue)
+        var imge_abs_path = this.COMMON.webUrl + '/' + newValue + '/' + this.FormInfo.conclusion[1]
+        imge_abs_path = imge_abs_path + '.jpg' // 需要判断远程是jpg或者是png
+        this.$set(this.FormInfo, 'image_path', imge_abs_path)
+      }
     }
   },
   methods: {
     handleLogoUploadSuccess(response, file, fileList) {
       console.log('Upload response is %o', response)
-      this.$set(this.FormInfo, 'image_path', apiConfig.webUrl + '/' + response.response_url)
+      this.$set(this.FormInfo, 'image_path', this.COMMON.webUrl + '/' + response.response_url)
     },
     uploadFile(file, formData) {
       return new Promise((resolve, reject) => {

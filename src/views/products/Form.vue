@@ -164,16 +164,20 @@ export default {
     treeFormData(val) {
       this.treedata = val
     },
-    // 从 treedata中获取已经存在的一级分类和二级分类的数组，
-    treedata(val) {
-      this.primaryLst = []
-      this.secondaryLst = []
-      for (var i = 0; i < val.length; i++) {
-        this.primaryLst.push(val[i].event)
-        for (var j = 0; j < val[i].children.length; j++) {
-          this.secondaryLst.push(val[i].children[j].event)
+    // 监控treedata的值，从treedata中获取已经存在的一级分类和二级分类的数组，以及初始化的id值
+    treedata: {
+      handler(newval) {
+        this.primaryLst = []
+        this.secondaryLst = []
+        for (var i in newval) {
+          this.primaryLst.push(newval[i].event)
+          for (var j in newval[i].children) {
+            this.secondaryLst.push(newval[i].children[j].event)
+          }
+          this.treeid[newval[i].event] = newval[i].children.length
         }
-      }
+      },
+      deep: true
     }
   },
   methods: {
@@ -214,19 +218,19 @@ export default {
       const range = await createDataForm(this.dialogFormInfo)
       if (range) {
         this.$message('产品:' + this.dialogFormInfo.product_name + ';创建' + '成功')
+        this.$emit('getlist')
         this.onCancel()
         this.treedata = []
       }
     },
     // 编辑更新数据
     async updateData() {
-      console.log(this.treedata)
       this.dialogFormInfo.results = JSON.stringify(this.circleJson(this.treedata))
       const tempData = Object.assign({}, this.dialogFormInfo)
-      console.log(tempData)
       const range = await updateDataForm(tempData)
       if (range) {
         this.$message('产品:' + this.dialogFormInfo.product_name + ';更新' + '成功')
+        this.$emit('getlist')
         this.onCancel()
         this.treedata = []
       }
@@ -315,11 +319,10 @@ export default {
     // 从trsander value中获取数据
     handleTransferData(val) {
       var tempIndi = [] // 指标项
-      this.transfer.data.forEach((item, index) => {
-        if (item.key in this.transfer.value) {
-          tempIndi.push(item.label)
-        }
-      })
+      for (var i in this.transfer.value) { // 遍历右边转移框
+        const val_idx = this.transfer.value[i] // 取值，作为总数据的idx
+        tempIndi.push(this.transfer.data[val_idx].label)
+      }
       // 父节点初始化
       var parent = {
         id: '展开/折叠',
@@ -330,19 +333,15 @@ export default {
       }
       // 子节点初始化
       var child = {
-        id: null,
+        id: this.treeid[this.primary_name],
         event: this.secondary_name, // 二级菜单
         number: tempIndi.length, // 指标数目
         detail: tempIndi.join(',') // 指标项目
       }
       // 根据参数传回去数据结构
       if (val === 'children') {
-        this.treeid[this.primary_name]++
-        child.id = this.treeid[this.primary_name]
         return child
       } else {
-        this.treeid[this.primary_name] = 0
-        child.id = this.treeid[this.primary_name]
         parent.children.push(child)
         return parent
       }
@@ -361,7 +360,6 @@ export default {
       // 传回穿越框中获取的数据
       var tempData = this.handleTransferData('children')
       // 用于判断是否增加子组件，禁止模块用不了，暂时通过穿越框中的value是否包含数据来判断
-      console.log(row)
       if (tempData.number > 0 && row.event === this.primary_name) {
         // 修改父节点值
         row.number = row.number + tempData.number
@@ -412,7 +410,7 @@ export default {
 </script>
 <style>
 .customWidth {
-  width: 60%;
+  width: 80%;
 }
 
 </style>
