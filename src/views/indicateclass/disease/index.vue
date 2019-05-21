@@ -1,5 +1,6 @@
 <template>
   <maincontent
+               :tableConfig="tableConfig"
                :fetchList="glistIndicateClass"
                :deleteRecord="gdeleteDiseaseIndicateClass"
                :getPrimary="gallPrimary"
@@ -29,6 +30,62 @@ export default {
   },
   data() {
     return {
+      tableConfig: [
+        {
+          name: 'primary_name',
+          label: '一级分类',
+          prop: 'secondary_name'
+        },
+        {
+          name: 'secondary_name',
+          label: '二级分类',
+          prop: 'secondary_name'
+        },
+        {
+          name: 'indicate_class',
+          label: '指标类',
+          prop: 'indicate_class'
+        },
+        {
+          name: 'male_incidence',
+          label: '男性发病率',
+          prop: 'male_incidence'
+        },
+        {
+          name: 'female_incidence',
+          label: '女性发病率',
+          prop: 'female_incidence'
+        },
+        {
+          name: 'disease_profile',
+          prop: 'disease_profile',
+          label: '疾病概述',
+          type: 'expand'
+        },
+        {
+          name: 'risk_factor',
+          prop: 'risk_factor',
+          label: '风险因素',
+          type: 'expand'
+        },
+        {
+          name: 'early_symptoms',
+          prop: 'early_symptoms',
+          label: '早期症状',
+          type: 'expand'
+        },
+        {
+          name: 'privention_advice',
+          prop: 'privention_advice',
+          label: '预防建议',
+          type: 'expand'
+        },
+        {
+          name: 'medical_examination_instructions',
+          prop: 'medical_examination_instructions',
+          label: '体检须知',
+          type: 'expand'
+        }],
       // 主表单需要收集的form数据
       formData: {
         primary_name: '常见疾病',

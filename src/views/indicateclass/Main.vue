@@ -6,89 +6,17 @@
     <!--新增 结束-->
     <!--数据列表上方 结束-->
     <!--数据列表表单 开始-->
-    <el-table v-loading="listLoading" :data="tableList" border fit highlight-current-row style="width: 100%;" @sort-change="sortChange">
-      <el-table-column type="expand">
-        <template slot-scope="props">
-          <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item :label="$t('table.disease_profile')">
-              <span>{{ props.row.disease_profile }}</span>
-            </el-form-item>
-            <el-form-item :label="$t('table.risk_factor')">
-              <span>{{ props.row.risk_factor }}</span>
-            </el-form-item>
-            <el-form-item :label="$t('table.early_symptoms')">
-              <span>{{ props.row.early_symptoms }}</span>
-            </el-form-item>
-            <el-form-item :label="$t('table.privention_advice')">
-              <span>{{ props.row.privention_advice }}</span>
-            </el-form-item>
-            <el-form-item :label="$t('table.medical_examination_instructions')">
-              <span>{{ props.row.medical_examination_instructions }}</span>
-            </el-form-item>
-          </el-form>
-        </template>
-      </el-table-column>
-      <el-table-column type="index" label="No." width="70px" align="center" />
-      <el-table-column :label="$t('table.disease_code')" prop="product_class" align="center" width="120px" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.indicate_class')" prop="indicate_class" align="center" width="120px" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.indicate_class }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.secondary_name')" prop="secondary_name" align="center" width="120px" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.secondary_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.female_incidence')" prop="secondary_name" align="center" width="120px" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.female_incidence }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.male_incidence')" prop="secondary_name" align="center" width="120px" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.male_incidence }}</span>
-        </template>
-      </el-table-column>
-       <el-table-column show-overflow-tooltip :label="$t('table.disease_profile')" prop="secondary_name" align="center" width="120px" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.disease_profile }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column show-overflow-tooltip :label="$t('table.risk_factor')" prop="secondary_name" align="center" width="120px" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.risk_factor }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column show-overflow-tooltip :label="$t('table.early_symptoms')" prop="secondary_name" align="center" width="120px" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.early_symptoms }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column show-overflow-tooltip :label="$t('table.privention_advice')" prop="secondary_name" align="center" width="120px" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.privention_advice }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column show-overflow-tooltip :label="$t('table.medical_examination_instructions')" prop="secondary_name" align="center" width="120px" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.medical_examination_instructions }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="200px" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
+    <expandTable :data="tableList" :tableKey="tableConfig">
+      <el-table-column  label="操作" width="220" align="center">
+      <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('table.edit') }}</el-button>
-          <el-button v-if="scope.row.status!='deleted'" size="mini" type="danger" @click="handleDelete(scope.row)">{{ $t('table.delete') }}
+          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">{{ $t('table.delete') }}
           </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!--数据列表表单 结束-->
+      </template>
+    </el-table-column>
+    </expandTable>
 
+    <!--数据列表表单 结束-->
     <!--页码 开始-->
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.page_size" @pagination="getList" />
     <!--页码 结束-->
@@ -101,11 +29,15 @@
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import addEditForm from './Form/Form'
+import expandTable from '@/components/Table/expandTable'
 
 export default {
   name: 'InterpMainTable',
-  components: { Pagination, addEditForm },
+  components: { Pagination, addEditForm, expandTable },
   props: {
+    tableConfig: {
+      type: Array
+    },
     fetchList: {
       type: Function,
       default: null
@@ -239,7 +171,8 @@ export default {
       for (var name in this.subFormInfo) {
         this.subFormInfo[name] = this.dialogFormInfo[name]
       }
-      console.log(this.dialogFormInfo)
+      this.subFormInfo.male_incidence = parseFloat(this.dialogFormInfo.male_incidence)
+      this.subFormInfo.female_incidence = parseFloat(this.dialogFormInfo.female_incidence)
       this.subFormInfo.id = this.dialogFormInfo.id
       this.dialogStatus = 'update'
       this.dialogVisible = true
@@ -248,19 +181,3 @@ export default {
 }
 
 </script>
-
- <style>
-  .demo-table-expand {
-    font-size: 0;
-  }
-  .demo-table-expand label {
-    width: 90px;
-    color: #99a9bf;
-  }
-  .demo-table-expand .el-form-item {
-    white-space: pre-wrap;
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 100%;
-  }
- </style>
