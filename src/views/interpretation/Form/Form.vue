@@ -48,7 +48,7 @@
 </template>
 <script type="text/javascript">
 import UploadExcelComponent from '@/components/UploadExcel/index.vue'
-import inEditTable from './inEditTable'
+import inEditTable from '@/components/Table/inEditTable'
 import SiteForm from './siteForm'
 import SubElForm from './subElForm'
 import ConclusionForm from './conclusionForm.vue'
