@@ -24,33 +24,33 @@ export function gallSecondary(primary_name) {
   })
 }
 
-export function gallDisease(secondary_name) {
+export function gallDiseasIndicateClass(secondary_name) {
   return request({
-    url: '/disease/all_disease',
+    url: '/disease/all_disease_indicate_class',
     method: 'get',
     params: { secondary_name }
   })
 }
 
-export function paddDisease(results) {
+export function paddDiseaseIndicateClass(results) {
   return request({
-    url: '/disease/add_disease',
+    url: '/disease/add_disease_indicate_class',
     method: 'post',
     params: { results }
   })
 }
 
-export function peditDisease(results) {
+export function peditDiseaseIndicateClass(results) {
   return request({
-    url: '/disease/edit_disease',
+    url: '/disease/edit_disease_indicate_class',
     method: 'post',
     params: { results }
   })
 }
 
-export function gdeleteDisease(id) {
+export function gdeleteDiseaseIndicateClass(id) {
   return request({
-    url: '/disease/delete_disease',
+    url: '/disease/delete_disease_indicate_class',
     method: 'get',
     params: id
   })

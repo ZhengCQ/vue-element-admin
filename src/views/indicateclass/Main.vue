@@ -92,14 +92,19 @@
     <!--页码 开始-->
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.page_size" @pagination="getList" />
     <!--页码 结束-->
+
+    <!--新增编辑表单 开始-->
+    <addEditForm ref="addEditForm" :dialogStatus="dialogStatus" :dialogFormVisible="dialogVisible"  @getlist="getList()" @cancel="resetDialog()"></addEditForm>
+    <!--新增编辑表单 结束-->
   </div>
 </template>
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
+import addEditForm from './Form/Form'
 
 export default {
   name: 'InterpMainTable',
-  components: { Pagination },
+  components: { Pagination, addEditForm },
   props: {
     fetchList: {
       type: Function,
@@ -128,6 +133,12 @@ export default {
     updateDataForm: {
       type: Function,
       default: null
+    },
+    subConfig: {
+      type: Object
+    },
+    formData: {
+      type: Object
     }
   },
   provide() {
@@ -216,7 +227,6 @@ export default {
     },
     handleCreate() {
       this.dialogStatus = 'create'
-      this.$refs.addEditForm.resetTable() // 调用Form中的重置数据 ，重置table可编辑表单
       for (var name in this.subFormInfo) {
         if (name !== 'primary_name') {
           this.subFormInfo[name] = ''
@@ -231,8 +241,6 @@ export default {
       }
       console.log(this.dialogFormInfo)
       this.subFormInfo.id = this.dialogFormInfo.id
-      this.siteEditForm = JSON.parse(this.dialogFormInfo.site_result)
-      this.conclustionEditForm = JSON.parse(this.dialogFormInfo.conclusion_result)
       this.dialogStatus = 'update'
       this.dialogVisible = true
     }

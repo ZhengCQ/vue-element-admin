@@ -13,7 +13,7 @@
 <script>
 import formMixins from '@/mixins/form-model'
 export default {
-  name: 'TextInput',
+  name: 'MultiTextInput',
   props: ['placeholder', 'label', 'prop', 'name', 'value', 'autosize'],
   mixins: [formMixins],
   data() {

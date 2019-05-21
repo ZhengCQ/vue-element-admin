@@ -192,6 +192,7 @@ export default {
       tempData.conclusion_result = this.$refs.conclustionTable.tableData
       this.pre_conclustionTable(tempData.conclusion_result)
       this.InterpMainApp.createDataForm(JSON.stringify(tempData)).then(() => {
+        this.$emit('getlist')
         this.$emit('cancel') // 调用父组件的cancer方法
         this.$notify({
           title: '成功',
