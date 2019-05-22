@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="data" border fit highlight-current-row style="width: 100%;">
+  <el-table v-loading="listLoading" :data="data" border fit highlight-current-row style="width: 100%;">
     <el-table-column type="expand">
       <template slot-scope="scope">
         <el-form label-position="left" inline class="demo-table-expand">
@@ -33,7 +33,7 @@
 <script type="text/javascript">
 export default {
   name: 'ExpandTable',
-  props: ['data', 'tableKey']
+  props: ['data', 'tableKey', 'listLoading']
 }
 </script>
 

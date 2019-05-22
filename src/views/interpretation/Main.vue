@@ -3,7 +3,6 @@
     <!--数据列表上方 开始-->
     <!--新增 开始-->
     <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
-    <upload-excel-component :on-success="handleSuccess" :before-upload="beforeUpload"/>
     <!--新增 结束-->
     <!--数据列表上方 结束-->
     <!--数据列表表单 开始-->
@@ -29,18 +28,17 @@
           <span>{{ scope.row.secondary_name }}</span>
         </template>
       </el-table-column>
-      <!--el-table-column :label="$t('table.primary_name')" prop="primary_name" align="center" width="160px" sortable>
+      <el-table-column :label="$t('table.conclustion_detail')" align="center" width="200px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <span>{{ scope.row.primary_name }}</span>
-        </template>
-      </el-table-column-->
-      <el-table-column :label="$t('table.indicate_detail')" align="center" width="300px" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button type="info" plain size="medium" @click="showConclustionDetail(scope.row)">{{ $t('table.conclustion_detail') }}</el-button>
-          <el-button type="info" plain size="medium" @click="showSiteDetail(scope.row)">{{ $t('table.site_detail') }}</el-button>
+          <el-button type="primary" size="small" @click="handleUpdateConclustion(scope.row)">查看/编辑
+          </el-button>
         </template>
       </el-table-column>
-
+      <el-table-column :label="$t('table.site_detail')" align="center" width="200px" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <el-button type="primary" size="small" @click="handleUpdateSites(scope.row)">查看/编辑</el-button>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('table.actions')" align="center" width="200px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('table.edit') }}</el-button>
@@ -54,30 +52,49 @@
     <!--页码 开始-->
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.page_size" @pagination="getList" />
     <!--页码 结束-->
-    <!--dialog表格开始-->
-    <dialog-table
-        :title="diaTitle"
-        :dialogTableVisible="dialogTableVisible"
-        :tableData="diaTableData"
-        :tableKey="diaTableKey"
-        @cancel="resetDialogTable()"
-      >
-    </dialog-table>
-    <!--dialog表格结束-->
     <!--新增编辑表单 开始-->
-    <addEditForm ref="addEditForm" :dialogStatus="dialogStatus" :siteEditForm="siteEditForm" :conclustionEditForm="conclustionEditForm" :dialogFormVisible="dialogVisible"  @getlist="getList()" @cancel="resetDialog()"></addEditForm>
+    <conclu-edit
+           ref="concluEdit"
+           :title="diaTitle"
+           :conclustionEditForm="conclustionEditForm"
+           :dialogFormVisible="dialogConclusionVisible"
+           @getlist="getList()"
+           @cancel="resetDialog()"
+           >
+    </conclu-edit>
+    <site-edit
+           ref="siteEdit"
+           :title="diaTitle"
+           :siteEditForm="siteEditForm"
+           :dialogFormVisible="dialogSiteVisible"
+           @getlist="getList()"
+           @cancel="resetDialog()"
+           >
+    </site-edit>
+    <addEditForm
+           ref="addEditForm"
+           :dialogStatus="dialogStatus"
+           :siteEditForm="siteEditForm"
+           :conclustionEditForm="conclustionEditForm"
+           :dialogFormVisible="dialogVisible"
+           @getlist="getList()"
+           @cancel="resetDialog()"
+           >
+    </addEditForm>
     <!--新增编辑表单 结束-->
   </div>
 </template>
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import addEditForm from './Form/Form'
+import ConcluEdit from './Form/dialogConluEdit'
+import SiteEdit from './Form/dialogSiteEdit'
 import DialogTable from './dialogTable'
 import UploadExcelComponent from '@/components/UploadExcel/index.vue'
 
 export default {
   name: 'InterpMainTable',
-  components: { addEditForm, Pagination, UploadExcelComponent, DialogTable },
+  components: { addEditForm, Pagination, UploadExcelComponent, DialogTable, ConcluEdit, SiteEdit },
   props: {
     fetchList: {
       type: Function,
@@ -159,6 +176,8 @@ export default {
       },
       subFormInfo: this.formData,
       dialogVisible: false,
+      dialogConclusionVisible: false,
+      dialogSiteVisible: false,
       dialogStatus: '',
       siteEditForm: [],
       conclustionEditForm: []
@@ -236,6 +255,8 @@ export default {
     },
     resetDialog() {
       this.dialogVisible = false // dialog关闭
+      this.dialogConclusionVisible = false
+      this.dialogSiteVisible = false
       // this.$refs.addEditForm.resetTable() // 调用Form中的重置数据 ，重置table可编辑表单
       // this.subFormInfo = this.formData // 调用index传递过来的formData 重置表单
       // this.getList()
@@ -261,48 +282,19 @@ export default {
       this.dialogStatus = 'update'
       this.dialogVisible = true
     },
-    // 上传方法
-    beforeUpload(file) {
-      const isLt1M = file.size / 1024 / 1024 < 1
-
-      if (isLt1M) {
-        return true
-      }
-
-      this.$message({
-        message: 'Please do not upload files larger than 1m in size.',
-        type: 'warning'
-      })
-      return false
+    handleUpdateConclustion(row) {
+      console.log(row)
+      this.dialogFormInfo = Object.assign({}, row) // copy obj
+      this.diaTitle = this.dialogFormInfo.indicate_name + '-结论详情'
+      this.dialogConclusionVisible = true
+      this.conclustionEditForm = JSON.parse(this.dialogFormInfo.conclusion_result)
     },
-    handleSuccess({ results, header }) {
-      const upload = { upload: results }
-      console.log(JSON.stringify(upload))
-      /* for (const i = 0;i <= results.length;i++){
-        row = results[i]
-        row.secondary_name
-        var item = {}
-        item.gene = row.gene
-        item.effect_allele = row.effect_allele
-        item.other_allele = row.other_allele
-        item.jb_or = row.jb_or
-        item.beta = row.beta
-        item.CI = row.CI
-        item.p_value = row.p_value
-        item.reference = row.reference
-        item.homeRefFrequency = row.homeRefFrequency
-        item.hetFrequency = row.hetFrequency
-        item.homAltFrequency = row.homAltFrequency
-      } */
-      /* recieveData(JSON.stringify(upload)).then(() => {
-        this.$emit('cancel') // 调用父组件的cancer方法
-        this.$notify({
-          title: '成功',
-          message: '创建成功',
-          type: 'success',
-          duration: 2000
-        })
-      })*/
+    handleUpdateSites(row) {
+      this.dialogFormInfo = Object.assign({}, row) // copy obj
+      this.diaTitle = this.dialogFormInfo.indicate_name + '-位点详情'
+      this.dialogSiteVisible = true
+      this.siteEditForm = JSON.parse(this.dialogFormInfo.site_result)
+      console.log(this.siteEditForm)
     }
   }
 }

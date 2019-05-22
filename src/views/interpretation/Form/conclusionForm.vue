@@ -17,6 +17,16 @@
              class="el-icon-plus uploader-icon" />
         </el-upload>
     </el-form-item>
+    <el-button
+              class="el-button el-button--primary el-button--mini clipboard-btn"
+              size="small"
+              v-clipboard:copy="FormInfo.image_path"
+              v-clipboard:success="onCopy"
+              v-clipboard:error="onError"
+              >
+            复制链接
+    </el-button>
+
     <el-form-item :label="$t('table.explanation')" prop="explanation">
       <el-input placeholder="结论说明和概况" type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="FormInfo.explanation" clearable> </el-input>
     </el-form-item>
@@ -67,6 +77,12 @@ export default {
     }
   },
   methods: {
+    onCopy(e) {
+      alert('拷贝图片链接: ' + e.text)
+    },
+    onError(e) {
+      alert('拷贝链接失败')
+    },
     handleLogoUploadSuccess(response, file, fileList) {
       console.log('Upload response is %o', response)
       this.$set(this.FormInfo, 'image_path', this.COMMON.webUrl + '/' + response.response_url)

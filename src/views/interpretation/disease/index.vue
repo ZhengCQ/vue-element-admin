@@ -184,7 +184,8 @@ export default {
       {
         label: '结论说明',
         key: 'explanation',
-        width: '200px'
+        width: '200px',
+        type: 'expand'
       },
       {
         label: '评估指标',
@@ -193,12 +194,14 @@ export default {
       {
         label: '解读详情',
         key: 'interpretation_details',
-        width: '250px'
+        width: '250px',
+        type: 'expand'
       },
       {
         label: '建议对策',
         key: 'suggest',
-        width: '450px'
+        width: '450px',
+        type: 'expand'
       }],
       // 位点表单数据初始化
       siteFormInfo: {

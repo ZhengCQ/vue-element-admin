@@ -6,7 +6,7 @@
     <!--新增 结束-->
     <!--数据列表上方 结束-->
     <!--数据列表表单 开始-->
-    <expandTable :data="tableList" :tableKey="tableConfig">
+    <expandTable :data="tableList" :tableKey="tableConfig" :listLoading="listLoading">
       <el-table-column  label="操作" width="220" align="center">
       <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('table.edit') }}</el-button>

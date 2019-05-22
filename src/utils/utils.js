@@ -1,13 +1,12 @@
-
 // 搜索转换列表
 export default function transQueryList(queryString, itemData) {
   var list = []
   for (const i of itemData) {
     // 当类型是对象时的处理情况
     if (typeof (i) === 'object') {
-    // 在这里为这个数组中每一个对象加一个value字段, 因为autocomplete只识别value字段并在下拉列中显示
+      // 在这里为这个数组中每一个对象加一个value字段, 因为autocomplete只识别value字段并在下拉列中显示
       list.push({ value: i.name })
-    // 当类型是字符时的处理情况
+      // 当类型是字符时的处理情况
     } else if (typeof (i) === 'string') {
       list.push({ value: i })
     }

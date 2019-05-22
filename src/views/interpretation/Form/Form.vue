@@ -207,6 +207,7 @@ export default {
       tempData.site_result = this.$refs.siteTable.tableData // 传回后台的的是results值，需要重新赋值。从inEditTable中获取表格数据
       tempData.conclusion_result = this.$refs.conclustionTable.tableData
       console.log(tempData.conclusion_result)
+      tempData.flag = 'all'
       this.pre_conclustionTable(tempData.conclusion_result)
       this.InterpMainApp.updateDataForm(JSON.stringify(tempData)).then(() => {
         this.$emit('getlist')
