@@ -36,13 +36,11 @@
         </slot>
       </template>
     </el-table-column>
-    <el-table-column label="操作" width="120" align="center">
       <template slot-scope="scope">
         <el-button v-if="scope.row.edit" type="success" size="small" icon="el-icon-circle-check-outline" @click="confirmEdit(scope.row)">OK</el-button>
         <el-button v-else type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
         <el-button type="danger" size="small" @click="handleDelRs(scope.row)">删除</el-button>
       </template>
-    </el-table-column>
   </el-table>
 </template>
 <script type="text/javascript">
