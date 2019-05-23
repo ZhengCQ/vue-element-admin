@@ -59,6 +59,9 @@ export default {
   props: {
     showForm: {
       type: Boolean
+    },
+    FormData: {
+      type: Object
     }
   },
   computed: {
@@ -67,10 +70,15 @@ export default {
     }
   },
   watch: {
+    FormData(val) {
+      var keys = ['conclusion', 'evaluation_indicator', 'explanation', 'image_path', 'indicate_id', 'interpretation_details', 'suggest', 'id']
+      keys.forEach(key => {
+        this.FormInfo[key] = val[key]
+      })
+    },
     riskimage(newValue) {
-      if (newValue !== null) {
-        console.log(newValue)
-        var imge_abs_path = this.COMMON.webUrl + '/' + newValue + '/' + this.FormInfo.conclusion[1]
+      if (this.riskimage !== null) {
+        var imge_abs_path = this.COMMON.webUrl + '/' + newValue + '/' + this.FormInfo.conclusion_sel[1]
         imge_abs_path = imge_abs_path + '.jpg' // 需要判断远程是jpg或者是png
         this.$set(this.FormInfo, 'image_path', imge_abs_path)
       }

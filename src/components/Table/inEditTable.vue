@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="tableData" border fit highlight-current-row style="width: 100%">
+  <el-table v-loading="listLoading" :data="tableData" border fit highlight-current-row style="width: 100%">
     <div v-if="expandshow === 'true'">
     <el-table-column type="expand">
       <template slot-scope="scope">
@@ -60,6 +60,7 @@
         <el-button type="danger" size="small" @click="handleDelRs(scope.row)">删除</el-button>
       </template>
     </el-table-column>
+    <slot></slot>
   </el-table>
 </template>
 <script type="text/javascript">
@@ -70,7 +71,7 @@ export default {
       tableData: this.data
     }
   },
-  props: ['data', 'columns', 'expandshow'],
+  props: ['data', 'columns', 'expandshow', 'listLoading'],
   watch: {
     data(val) {
       this.tableData = val

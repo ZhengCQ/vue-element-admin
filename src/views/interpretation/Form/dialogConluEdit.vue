@@ -9,13 +9,21 @@
     <!--添加结论开始-->
     <conclusion-form
                 ref="conclusionform"
-                :showForm="showClusionForm">
+                :showForm="showClusionForm"
+                :FormData="Formdata"
+                >
       <slot>
         <el-button type="primary" @click="handleCreateConclusion">确定新增</el-button>
       </slot>
     </conclusion-form>
-    <inEditTable ref="conclustionTable" :expandshow="'true'" :data="conclustionTableList" :columns="conclustionColumns" >
+    <inEditTable ref="conclustionTable" :expandshow="'true'" :data="conclustionTableList" :columns="conclustionColumns" :listLoading="listLoading">
+    <el-table-column  label="弹框" width="110" align="center">
+      <template slot-scope="scope">
+          <el-button :disabled="(scope.row.id === 0)" type="primary" size="mini" @click="showClusionForm=!showClusionForm;handleEditRow(scope.row)">编辑/关闭</el-button>
+      </template>
+    </el-table-column>
     </inEditTable>
+
     <div slot="footer" class="dialog-footer">
       <!--el-button @click="onCancel">{{ $t('table.cancel') }}</el-button-->
       <el-button type="primary" @click="dialogStatus==='create'?createData():updateData();onCancel()">{{ $t('table.confirm') }}</el-button>
@@ -40,6 +48,8 @@ export default {
       conclustionColumns: this.InterpMainApp.conclustionColumns,
       showClusionForm: false,
       conid: 0,
+      Formdata: {},
+      listLoading: false,
       conclustionTableList: this.conclustionEditForm
     }
   },
@@ -71,6 +81,10 @@ export default {
         }
       }
     },
+    handleEditRow(row) {
+      this.Formdata = Object.assign({}, row)
+      console.log(this.Formdata)
+    },
     resetTable() { // 主页面的cancer调用重置
       this.conclustionTableList = []
       this.showClusionForm = false
@@ -78,17 +92,31 @@ export default {
     // 将每次的结论增加到结论表格中
     handleCreateConclusion() {
       const concluTemp = Object.assign({}, this.$refs.conclusionform.FormInfo) // 将siteform的值赋值给siteTableList,给表格
-      concluTemp.evaluation_indicator = concluTemp.conclusion[2]
-      concluTemp.conclusion = concluTemp.conclusion[1]
-      concluTemp.id = 0 // 便于新增
-      concluTemp.tempid = this.conid // id赋值, 便于删除
-      console.log(concluTemp)
+      if (Array.isArray(concluTemp.conclusion_sel)) { // 重新做选择
+        concluTemp.evaluation_indicator = concluTemp.conclusion_sel[2]
+        concluTemp.conclusion = concluTemp.conclusion_sel[1]
+      }
+      if (!('id' in concluTemp)) { // 新增
+        concluTemp.id = 0 // 便于新增后台识别
+        concluTemp.tempid = this.conid // id赋值, 便于删除
+        this.conclustionTableList.push(concluTemp)
+        this.updateData()
+      } else { // 编辑
+        this.conclustionTableList.forEach((item, index) => {
+          if (concluTemp.id === item.id) {
+            var keys = ['conclusion', 'evaluation_indicator', 'explanation', 'image_path', 'indicate_id', 'interpretation_details', 'suggest']
+            keys.forEach(key => {
+              this.conclustionTableList[index][key] = concluTemp[key]
+            })
+            console.log(concluTemp)
+          }
+        })
+      }
+      // console.log(concluTemp)
       // concluTemp.edit = false // 可编辑表单
       // this.conid++
-      this.conclustionTableList.push(concluTemp)
       this.showClusionForm = false
       this.resetData(this.$refs.conclusionform.FormInfo) // 重置表单中的值
-      this.updateData()
     },
     pre_conclustionTable(tableData) {
       tableData.forEach((item, index) => {
@@ -107,6 +135,7 @@ export default {
       console.log(JSON.stringify(tempData))
       this.InterpMainApp.updateDataForm(JSON.stringify(tempData)).then(() => {
         this.$emit('getlist')
+        // this.onCancel()
         this.$notify({
           title: '成功',
           message: '更新成功',

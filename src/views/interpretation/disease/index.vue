@@ -93,6 +93,7 @@ export default {
       // 结论表单数据初始化
       conclusionFormInfo: {
         conclusion: '',
+        conclusion_sel: '',
         explanation: '',
         evaluation_indicator: '',
         interpretation_details: '',
@@ -104,7 +105,7 @@ export default {
       conclusionConfig: {
         fieldsConfig: [
           {
-            name: 'conclusion',
+            name: 'conclusion_sel',
             label: '分类结论与评估',
             placeholder: '风险等级和评估指标',
             fieldType: 'CasCader',
